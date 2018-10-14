@@ -1,0 +1,4 @@
+runtime: nodejs8
+
+env_variables:
+  WORK_DAY: 8
