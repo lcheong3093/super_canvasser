@@ -1,8 +1,12 @@
 var express = require('express');
 var router = express.Router();
 
+//Import files
 const Auth = require('./Authentication');
+const Manager = require('./Manager');
+const Helpers = require('./Helpers');
 
+//Connect to Datastore
 const Datastore = require('@google-cloud/datastore');
 const datastore = new Datastore({
     projectId: "super-canvasser-cse308",
@@ -17,16 +21,13 @@ router.post('/login', (req, res) => {
     var username = req.body.username;
     var password = req.body.password;
 
-    const query = datastore.createQuery(role);
-    query.filter('Username', username);
-    query.filter('Password', password);
-
-    datastore.runQuery(query, function(err, entities) {
-        if(err) throw err;
-        
-        res.send({result:entities});
+    Auth.login(username, password, role, function(err, result) {
+        if(result.length == 0) {
+            res.send({status: "error", message: "Incorrect password or username"});
+        }else{
+            res.send({result: result});
+        }
     });
-    // console.log(Auth.login(username, password, role));
 });
 
 router.post('/create_user', (req, res) => {
@@ -43,20 +44,21 @@ router.post('/change_availability', (req, res) => {
     var dates = req.body.dates;
     var user = req.body.username;
 
+    //Convert array to string to store into Datastore
     var insert = dates[0];
     for(var i=1; i<dates.length; i++)
         insert += ", " + dates[i];
-    console.log(insert);
 
+    //Find specified canvasser
     const query = datastore.createQuery('Canvasser');
     query.filter('Username', user);
 
     datastore.runQuery(query, function(err, entities) {
         if(err) throw err;
 
+        //Construct entity for update
         var entity = entities[0];
         entity.Availability = insert;
-        console.log(entity);
 
         datastore.update(entity, function(err, apiResponse){
             if(err) throw err;
@@ -66,6 +68,11 @@ router.post('/change_availability', (req, res) => {
     res.send({status: 'OK'});
 });
 
-
+/** CAMPAIGN MANAGER REQUESTS **/
+router.post('/create_campaign', function(req, res){
+    Manager.create_campaign(req.body, function(err, res){
+        
+    });
+});
 
 module.exports = router;

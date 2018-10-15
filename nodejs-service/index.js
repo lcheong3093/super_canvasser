@@ -7,6 +7,7 @@ var app = express();
 var main = require('./routes/main');
 
 app.use(bodyParser.json());
+app.use(bodyParser.raw());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use('/', main);
 
