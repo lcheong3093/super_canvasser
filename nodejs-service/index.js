@@ -5,10 +5,10 @@ var bodyParser = require('body-parser');
 var app = express();
 
 var main = require('./routes/main');
-app.use('/', main);
 
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use('/', main);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
@@ -25,7 +25,7 @@ app.use(function(err, req, res, next) {
 
   // render the error page
   res.status(err.status || 500);
-  res.render('error');
+  res.send(err);
 });
 
 if (module === require.main) {

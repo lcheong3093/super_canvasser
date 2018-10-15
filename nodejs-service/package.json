@@ -4,6 +4,8 @@
   "description": "Backend Service",
   "main": "index.js",
   "dependencies": {
+    "@google-cloud/datastore": "^2.0.0",
+    "ejs": "^2.6.1",
     "express": "^4.16.4"
   },
   "devDependencies": {},
