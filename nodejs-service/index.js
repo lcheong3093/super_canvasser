@@ -5,7 +5,10 @@ var bodyParser = require('body-parser');
 var app = express();
 
 var main = require('./routes/main');
-app.use('/', main);
+var auth = require('./routes/auth');
+
+app.use('/login.html', express.static(__dirname + '/Pages'));
+
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));

@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+
+	<script>
+			$(document).ready(function(){
+			    $("#log-in-btn").click(function(){
+			        $.ajax({
+			        	url: "/api/auth",
+			        	method: 'POST',
+			        	contentType: 'application/json; charset=utf-8',
+			        	data: {
+			        		'email': $("#email-input").val(),
+			        		'password': $("#password-input").val()
+			        	},
+			        	success: function(result){
+				        	$("#div1").html(result);
+				    	}
+					});
+			    });
+			});
+	</script>
+</head>
+<body>
+
+Email: <input type="text" id="email-input"><br/>
+Password: <input type="text" id="password-input"><br/>
+
+<a id="log-in-btn"> Log In </a>
+
+<div id="div1"> </div>
+
+</body>
+</html>
