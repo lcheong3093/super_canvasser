@@ -12,8 +12,18 @@ router.get('/', (req, res) => {
 });
 
 router.post('/login', (req, res) => {
+    var role = req.body.role;
     var username = req.body.username;
     var password = req.body.password;
+
+    const query = datastore.createQuery(role);
+    query.filter('Username', username);
+    query.filter('Password', password)
+    datastore.runQuery(query, function(err, entities) {
+        if(err) throw err;
+        console.log(entities);
+        res.send({ results: entities })
+    });
 });
 
 router.post('/create_user', (req, res) => {
@@ -23,16 +33,7 @@ router.post('/create_user', (req, res) => {
 
 /** CAVNASSER REQUESTS **/
 router.post('/assignments', function(req, res){
-    var name = req.body.name;
-    var role = req.body.role;
-
-    const query = datastore.createQuery(role);
-    query.filter('Name', name);
-    datastore.runQuery(query, function(err, entities) {
-        if(err) throw err;
-        console.log(entities);
-        res.send({ results: entities })
-    });
+    
 });
 
 router.post('/change_availability', (req, res) =>{
