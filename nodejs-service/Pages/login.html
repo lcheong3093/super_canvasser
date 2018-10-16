@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" class="no-js" lang="en">
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <meta charset="utf-8">
+    <title>Super Canvasser Login</title>
+    <script
+  src="https://code.jquery.com/jquery-2.2.4.js"
+  integrity="sha256-iT6Q9iMJYuQiMWNd9lDyBUStIq/8PuOW33aOqmvFpqI="
+  crossorigin="anonymous"></script>
+    <script>
+
+        function setCookie(cname, cvalue, exdays) {
+            var d = new Date();
+            d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000));
+            var expires = "expires=" + d.toUTCString();
+            document.cookie = cname + "=" + cvalue + "; " + expires;
+        }
+
+        function getCookie(cname) {
+            var name = cname + "=";
+            var ca = document.cookie.split(';');
+            for (var i = 0; i < ca.length; i++) {
+                var c = ca[i];
+                while (c.charAt(0) == ' ') c = c.substring(1);
+                if (c.indexOf(name) != -1) return c.substring(name.length, c.length);
+            }
+            return "";
+        }
+
+        $(function () {
+
+            var loginBtn = $("#loginBtn");
+            var loginHTML = loginBtn.html();
+            var dotsLoop;
+
+            function dots(stop) {
+                //var width = $("#loginBtn").outerWidth();
+
+                if (stop == 'stop') {
+                    loginBtn.css({ 'width': '90px', 'text-align': 'left' });
+                    loginBtn.html(loginHTML);
+                    loginBtn.removeAttr("disabled");
+                    clearInterval(dotsLoop);
+                    return true;
+                }
+
+                loginBtn.css({ "width": "90px", "text-align": "left" });
+                loginBtn.html("Loading");
+                loginBtn.attr("disabled", true);
+
+                var html;
+                dotsLoop = setInterval(function () {
+                    html = loginBtn.html();
+                    if (html == "Loading...") {
+                        //clear the dots
+                        loginBtn.html("Loading");
+
+                    } else if (html == "Loading") {
+                        loginBtn.html("Loading.");
+
+
+                    } else if (html == "Loading.") {
+                        loginBtn.html("Loading..");
+                    } else if (html == "Loading..") {
+                        loginBtn.html("Loading...");
+                    }
+                }, 200);
+
+            }
+
+
+
+            $("form").submit(function (event) {
+                event.preventDefault();
+            });
+
+            function loginError(display) {
+                var loginErrorDiv = $(".login-error");
+                if (display == true) {
+                    loginErrorDiv.slideDown('fast');
+                } else {
+                    loginErrorDiv.slideUp('fast');
+                }
+            }
+
+            function doLogin() {
+                document.cookie = "";
+
+                loginError(false);
+                dots();
+                var authUrl = "http://localhost:8080/login";
+                var user = $("#txtUserName").val();
+                var pass = $("#txtPwd").val();
+                var nextPage;
+                $.post(authUrl, { 'username': user, 'password': pass, 'role' : 'Manager' }).success(function (data) {
+
+                    setCookie('UserName', user);
+                    setCookie('UserType', "Manager");
+                    window.open("dashboard.html","_self");
+                    
+                }).fail(function (data) {
+                    
+                    var outerDiv = $('<div id="outer-div"></div>');
+                    outerDiv.append("Incorrect Username and/or Password");
+
+                    $(".login-error").html(outerDiv.html());
+                    dots('stop');
+                    loginError(true);
+                });
+            }
+
+
+
+
+            $("#loginBtn").on("click", function () {
+                doLogin();
+            });
+
+
+            $("#txtUserName")[0].focus();
+
+
+
+        }); // end of document ready
+
+
+    </script>
+
+    <style type="text/css">
+        body {
+            color: #000;
+            font-family: 'Open Sans',sans-serif;
+            padding: 0 !important;
+            margin: 0 !important;
+            font-size: 13px;
+            direction: ltr;
+        }
+        .login .content {
+            width: 360px;
+            margin: 0 auto;
+            margin-bottom: 0;
+            padding: 30px;
+            padding-top: 20px;
+            padding-bottom: 15px;
+        }
+        #loginBtn {
+            border-radius: 10px !important;
+        }
+
+            #loginBtn[disabled] {
+                background-color: #3F3F3F !important;
+            }
+
+        .login-error {
+            border: 1px solid #DF0000;
+            color: #DF0000;
+            background-color: #F0CACA;
+            display: none;
+            padding: 5px;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+
+        .login .logo {
+            margin-top: 0px !important;
+            padding: 25px !important;
+            text-align: left;
+        }
+
+        .login .content {
+            margin-top: 50px;
+            padding: 0px !important;
+        }
+
+            .login .content h3 {
+                color: black;
+            }
+
+        .login .logo img {
+            height: 90px;
+        }
+
+        div#divLoginForm {
+            padding: 25px;
+        }
+
+        .login .copyright {
+            color: black;
+        }
+
+        .trms-svc {
+            color: black;
+            text-decoration: underline;
+            padding-left: 20px;
+        }
+
+        @media (max-width: 481px) {
+            .login .logo img {
+                height: 40px !important;
+            }
+        }
+
+
+        .forgot-password-btn {
+            float: left;
+        }
+
+            .forgot-password-btn a {
+                color: black;
+            }
+
+        .btn.blue {
+            background-color: #10CBE7 !important;
+        }
+
+            .btn.blue:hover {
+                background-color: #0A8294 !important;
+            }
+
+        .cf {
+            content: "";
+            clear: both;
+            overflow: auto;
+        }
+
+        .link-to-signup {
+            color: black;
+            text-decoration: underline;
+        }
+
+            .link-to-signup:hover {
+                color: #0d638f;
+            }
+
+        #login-left-hand-side {
+            width: 37.5%;
+            height: 100vh;
+            float: left;
+            background-color: #A9C9FF;
+            background-image: linear-gradient(180deg, #A9C9FF 0%, #FFBBEC 100%);
+
+        }
+
+        #login-right-hand-side {
+            width: 62.5%;
+            float: left;
+        }
+
+        .login-left-bottom-links {
+            color: white;
+            padding: 10px;
+            cursor: pointer;
+        }
+
+        .login-left-bottom-links:hover {
+            color: #407cd6;
+            text-decoration: none;
+        }
+
+    
+        .copyright {
+            position: fixed;
+            bottom: 20px;
+            padding-bottom: 0px;
+        }
+
+        #name-logo-div h1, #name-logo-div h2 {
+            padding: 0px;
+            margin: 0px;
+
+        }
+
+        #name-logo-div {
+
+            color: white;
+            font-family: serif;
+            font-size: 20px;
+            padding: 25px;
+        }
+        #name-logo-div h1 {
+            font-size: 43px;
+        }
+        #name-logo-div h2 {
+            font-size: 33px;
+        }
+        .form-control {
+            display: block;
+            width: 100%;
+            height: 34px;
+            padding: 6px 12px;
+            font-size: 14px;
+            font-weight: normal;
+            font-family1: "Segoe UI","Helvetica Neue",Helvetica,Arial,sans-serif;
+            color: #333;
+            background-color: #fff;
+            border: 1px solid #e5e5e5;
+            border-radius: 0;
+            -webkit-box-shadow: none;
+            box-shadow: none;
+            -webkit-transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s;
+            transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .btn {
+            border-width: 0;
+            padding: 7px 14px;
+            float: right;
+            color: white;
+            font-size: 14px;
+            outline: none !important;
+            -webkit-box-shadow: none !important;
+            -moz-box-shadow: none !important;
+            box-shadow: none !important;
+            -webkit-border-radius: 0 !important;
+            -moz-border-radius: 0 !important;
+            border-radius: 0 !important;
+            -webkit-text-shadow: none;
+            -moz-text-shadow: none;
+            text-shadow: none;
+        }
+    </style>
+
+</head>
+
+<body class="login" style="background-color: white !important;">
+
+       
+        <div id="login-left-hand-side">
+            <div id="name-logo-div"> 
+                <h1>Super</h1>
+                <h2>Canvasser</h1>
+            </div>
+        </div>
+        <div id="login-right-hand-side">
+            <div class="content" style="margin-top: 20%;">
+                <div id="divLoginForm">
+
+                        <h3 class="form-title">Login to your account</h3>
+                        <div class="login-error">Incorrect Email or Password.</div>
+                        <div class="form-group">
+                            <label class="control-label">Username</label>
+                            <input tabindex="1" class="form-control placeholder-no-fix" autocomplete="off" placeholder="Username" name="userName" id="txtUserName" required="required" type="text">
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label">Password</label>
+                            <input tabindex="2" class="form-control placeholder-no-fix" autocomplete="off" placeholder="Password" name="password" id="txtPwd" required="required" type="password">
+                        </div>
+                        <div class="form-actions">
+                            <div class="forgot-password-btn">
+                                <a href="">Forgot Password?</a>
+                            </div>
+                            <button value="Login" class="btn blue pull-right" id="loginBtn">
+                                Login ->
+                            </button>
+
+                        </div>
+
+                    
+                </div>
+                <div style="text-align: center; margin-bottom: 27px; margin-top: 15px;">
+                    Don't have an account? <a class="link-to-signup" href="">Register Now</a>
+                </div>
+                
+                <div class="copyright" style="margin: 0 60px;">
+                    ©
+                    2018
+                    Three Software Corporation
+                
+                </div>
+            </div>
+        </div></form>
+
+</body></html>
