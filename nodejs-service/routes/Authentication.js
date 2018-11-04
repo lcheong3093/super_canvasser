@@ -2,7 +2,7 @@
 //Create instance of datastore service
 const Datastore = require('@google-cloud/datastore');
 const datastore = new Datastore({
-    projectId: "super-canvasser-cse308",
+    projectId: "super-canvasser-cse308"
 });
 
 module.exports = {
@@ -17,7 +17,6 @@ module.exports = {
 
         datastore.runQuery(query, function(err, entities) {
             if(err) throw err;
-            console.log(entities);
             callback(err, entities);
         });
     },

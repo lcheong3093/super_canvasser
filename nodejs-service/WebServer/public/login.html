@@ -7,6 +7,8 @@
   src="https://code.jquery.com/jquery-2.2.4.js"
   integrity="sha256-iT6Q9iMJYuQiMWNd9lDyBUStIq/8PuOW33aOqmvFpqI="
   crossorigin="anonymous"></script>
+  <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet"> 
+
     <script>
 
         function setCookie(cname, cvalue, exdays) {
@@ -91,15 +93,23 @@
                 var authUrl = "http://localhost:8080/login";
                 var user = $("#txtUserName").val();
                 var pass = $("#txtPwd").val();
-                var nextPage;
-                $.post(authUrl, { 'username': user, 'password': pass, 'role' : 'Manager' }).success(function (data) {
 
-                    setCookie('UserName', user);
-                    setCookie('UserType', "Manager");
+                if($("#login-role-selector").val() == "Campaign Manager")
+                    var role = "Manager";
+                else
+                    var role = $("#login-role-selector").val();
+
+                var nextPage;
+                $.post(authUrl, { 'username': user, 'password': pass, 'role' : role }).success(function (data) {
+                    debugger;
+                    setCookie('UserFullName', data.Name);
+                    setCookie('UserName', data.Username);
+                    setCookie('UserType', role);
+                    setCookie('Useremail', data.Email);
                     window.open("dashboard.html","_self");
                     
                 }).fail(function (data) {
-                    
+                    debugger;
                     var outerDiv = $('<div id="outer-div"></div>');
                     outerDiv.append("Incorrect Username and/or Password");
 
@@ -129,7 +139,7 @@
     <style type="text/css">
         body {
             color: #000;
-            font-family: 'Open Sans',sans-serif;
+            font-family: 'Roboto';
             padding: 0 !important;
             margin: 0 !important;
             font-size: 13px;
@@ -330,8 +340,7 @@
        
         <div id="login-left-hand-side">
             <div id="name-logo-div"> 
-                <h1>Super</h1>
-                <h2>Canvasser</h1>
+                <img src="/Images/logo.png" />
             </div>
         </div>
         <div id="login-right-hand-side">
@@ -349,19 +358,21 @@
                             <input tabindex="2" class="form-control placeholder-no-fix" autocomplete="off" placeholder="Password" name="password" id="txtPwd" required="required" type="password">
                         </div>
                         <div class="form-actions">
-                            <div class="forgot-password-btn">
-                                <a href="">Forgot Password?</a>
-                            </div>
-                            <button value="Login" class="btn blue pull-right" id="loginBtn">
+                            
+                            <label>Role of user: </label>
+                            <select id="login-role-selector" style="margin-left:25px;">
+                                <option>Canvasser</option>
+                                <option>Campaign Manager</option>
+                                <option>System Administrator</option>
+                            </select>
+                            <br />    
+                            <button value="Login" class="btn blue pull-right" id="loginBtn" style="margin-top: 20px;">
                                 Login ->
                             </button>
 
                         </div>
 
                     
-                </div>
-                <div style="text-align: center; margin-bottom: 27px; margin-top: 15px;">
-                    Don't have an account? <a class="link-to-signup" href="">Register Now</a>
                 </div>
                 
                 <div class="copyright" style="margin: 0 60px;">
