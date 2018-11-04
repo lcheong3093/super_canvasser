@@ -5,6 +5,7 @@ var router = express.Router();
 const Auth = require('./Authentication');
 const Manager = require('./Manager');
 const Helpers = require('./Helpers');
+const SystemAdmin = require('./Systemadmin')
 
 //Connect to Datastore
 const Datastore = require('@google-cloud/datastore');
