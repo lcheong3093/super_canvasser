@@ -24,9 +24,9 @@ router.post('/login', (req, res) => {
 
     Auth.login(username, password, role, function(err, result) {
         if(result.length == 0) {
-            res.send({status: "error", message: "Incorrect password or username"});
+            res.status(500).send("Incorrect password or username");
         }else{
-            res.send({result: result});
+            res.status(200).send(result[0]);
         }
     });
 });
