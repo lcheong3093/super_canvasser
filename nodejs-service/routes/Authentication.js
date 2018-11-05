@@ -19,9 +19,5 @@ module.exports = {
             if(err) throw err;
             callback(err, entities);
         });
-    },
-
-    create_user: function(user, callback) {
-
     }
 }

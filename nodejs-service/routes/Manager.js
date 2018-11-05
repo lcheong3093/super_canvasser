@@ -22,6 +22,7 @@ module.exports = {
 
         datastore.save(insert, function(err){
             if(err) throw err;
+            callback(err, entity);
         });
     }
 }

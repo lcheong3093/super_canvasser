@@ -31,10 +31,22 @@ router.post('/login', (req, res) => {
     });
 });
 
+/** SYSTEM ADMIN **/
 router.post('/create_user', (req, res) => {
-    console.log(req.body);
+   console.log(req.body);
+    SystemAdmin.create_user(req.body.user, req.body.Role, function(err, result) {
+            res.status(200).send("Success");
+    });
 
 });
+
+router.post('/delete_user', (req, res) => {
+    console.log(req.body);
+     SystemAdmin.delete_user(req.body.username, req.body.Role, function(err, result) {
+             res.status(200).send("Success");
+     });
+ 
+ });
 
 /** CAVNASSER REQUESTS **/
 router.post('/assignments', function(req, res){
