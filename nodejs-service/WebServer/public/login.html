@@ -106,7 +106,10 @@
                     setCookie('UserName', data.Username);
                     setCookie('UserType', role);
                     setCookie('Useremail', data.Email);
-                    window.open("dashboard.html","_self");
+                    setCookie('UserGUID', data.UserGUID);
+
+                    if(role=="Manager")
+                        window.open("/Manager/Dashboard.html","_self");
                     
                 }).fail(function (data) {
                     debugger;
