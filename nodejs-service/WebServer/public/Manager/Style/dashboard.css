@@ -117,3 +117,8 @@ label {
 .cancel-btn {
 	background-color: #ff4c4c;
 }
+
+#locations-map {
+    height: 150px;
+    width: 425px;
+}

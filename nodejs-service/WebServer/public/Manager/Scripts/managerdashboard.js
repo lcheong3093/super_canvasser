@@ -35,6 +35,11 @@ function CampaignListViewModel() {
 		});
 	};
 
+	self.openCampaign = function(campaign) {
+
+		campaignVM.openExistingCampaign(campaign);
+	}
+
 	self.newCampaign = function () {
 		campaignVM.newCampaign();
 	};
@@ -59,12 +64,15 @@ function CampaignViewModel() {
 
 	self.talkingPoints = ko.observable('');
 
+	self.isEdit = ko.observable(true);
+
 	self.init = function() {
 
 
 	};
 
 	self.newCampaign = function () {
+		self.isEdit(true);
 		campaignViewDialog.dialog("open");
 	};
 
@@ -98,6 +106,19 @@ function CampaignViewModel() {
 		});
 	};
 
+	self.openExistingCampaign = function (campaign) {
+
+		self.isEdit(false);
+		self.campaignName(campaign.Name);
+		self.canvassersAssigned(campaign.Canvassers);
+		self.managersAssigned(campaign.Managers);
+		self.locations(campaign.Locations);
+		self.questions(campaign.Questionnaire);
+		self.startDate(campaign.Start);
+		self.talkingPoints(campaign.Talking_points);
+		campaignViewDialog.dialog("open");
+		
+	};
 
 	self.cancel = function () {
 		self.cleanModal();
@@ -105,7 +126,7 @@ function CampaignViewModel() {
 	};
 
 	self.cleanModal = function () {
-		
+		self.isEdit(true);
 		self.locations('');
 		self.questions('');
 		self.startDate('');
@@ -129,5 +150,16 @@ ko.applyBindings(campaignListVM,$("#campaign-list")[0]);
 ko.applyBindings(campaignVM,$("#campaign-view-modal")[0]);
 
 $( document ).ready(function() {
-    $("select").select2();
+    $("select").select2({
+    	tags: true
+    });
+
+    var mymap = L.map('locations-map').setView([40.92, -73.13], 13);
+
+    L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoiZGlub211ZnRpYyIsImEiOiJjam82aWRwdDgwNmc1M2tvM3Z6bjVybzdkIn0.2SdesRBzPBzAABi4xOAiFw', {
+    attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
+    maxZoom: 18,
+    id: 'mapbox.streets',
+    accessToken: 'pk.eyJ1IjoiZGlub211ZnRpYyIsImEiOiJjam82aWRwdDgwNmc1M2tvM3Z6bjVybzdkIn0.2SdesRBzPBzAABi4xOAiFw'
+}).addTo(mymap);
 });
