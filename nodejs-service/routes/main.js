@@ -83,9 +83,38 @@ router.post('/change_availability', (req, res) => {
 
 /** CAMPAIGN MANAGER REQUESTS **/
 router.post('/create_campaign', function(req, res){
-    Manager.create_campaign(req.body, function(err, res){
-        
+    Manager.create_campaign(req.body, function(err, result){
+        res.status(200).send(result);
     });
 });
-
+router.post('/get_campaigns', function(req, res){
+    Manager.get_campaigns(req.body.UserGUID, function(err, result){
+        res.status(200).send(result);
+    });
+    
+});
+router.post('/get_campaign', function(req, res){
+    Manager.get_campaign(req.body.CampaignGUID, function(err, result){
+        res.status(200).send(result);
+    });
+    
+});
+router.post('/get_canvassers', function(req, res){
+    Manager.get_canvassers(function(err, result){
+        res.status(200).send(result);
+    });
+    
+});
+router.post('/get_managers', function(req, res){
+    Manager.get_managers(function(err, result){
+        res.status(200).send(result);
+    });
+    
+});
+router.post('/add_manager_to_campaign', function(req, res){
+    Manager.add_manager_to_campaign(req.body.ManagerGUID,req.body.CampaignGUID,function(err, result){
+        res.status(200).send(result);
+    });
+    
+});
 module.exports = router;
