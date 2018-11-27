@@ -90,7 +90,7 @@
 
                 loginError(false);
                 dots();
-                var authUrl = "http://localhost:8080/login";
+                var authUrl = "/api/login";
                 var user = $("#txtUserName").val();
                 var pass = $("#txtPwd").val();
 
@@ -102,14 +102,10 @@
                 var nextPage;
                 $.post(authUrl, { 'username': user, 'password': pass, 'role' : role }).success(function (data) {
                     debugger;
-                    setCookie('UserFullName', data.Name);
-                    setCookie('UserName', data.Username);
-                    setCookie('UserType', role);
-                    setCookie('Useremail', data.Email);
-                    setCookie('UserGUID', data.UserGUID);
+                    setCookie('UserGUID', data);
 
                     if(role=="Manager")
-                        window.open("/Manager/Dashboard.html","_self");
+                        window.open("/web/Manager/Dashboard.html","_self");
                     
                 }).fail(function (data) {
                     debugger;
@@ -343,7 +339,7 @@
        
         <div id="login-left-hand-side">
             <div id="name-logo-div"> 
-                <img src="/Images/logo.png" />
+                <img src="/web/Images/logo.png" />
             </div>
         </div>
         <div id="login-right-hand-side">

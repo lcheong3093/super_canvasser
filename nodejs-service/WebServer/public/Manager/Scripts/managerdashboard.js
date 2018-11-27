@@ -14,7 +14,8 @@ function CampaignListViewModel() {
 		$.ajax({
 		  type: "POST",
 	      contentType: "application/json",
-	      url: 'http://localhost:8080/get_campaigns',
+	      url: '/api/get_campaigns',
+			xhrFields: { withCredentials: true },
 	      data: JSON.stringify(input),
 		}).done(function(data) {
 		  	for(var i =0;i<data.length; i++){
@@ -24,7 +25,7 @@ function CampaignListViewModel() {
 				$.ajax({
 				  type: "POST",
 			      contentType: "application/json",
-			      url: 'http://localhost:8080/get_campaign',
+			      url: '/api/get_campaign',
 			      data: JSON.stringify(input),
 				}).done(function(data) {
 				  	campaignsJS.push(data);
@@ -87,7 +88,7 @@ function CampaignViewModel() {
 		$.ajax({
 		  type: "POST",
 	      contentType: "application/json",
-	      url: 'http://localhost:8080/create_campaign',
+	      url: '/api/create_campaign',
 	      data: JSON.stringify(input),
 		}).done(function(data) {
 			var input = {
@@ -97,7 +98,7 @@ function CampaignViewModel() {
 		  	$.ajax({
 			  type: "POST",
 		      contentType: "application/json",
-		      url: 'http://localhost:8080/add_manager_to_campaign',
+		      url: '/api/add_manager_to_campaign',
 		      data: JSON.stringify(input),
 				}).done(function(data) {
 				  	campaignListVM.init();

@@ -1,11 +1,12 @@
 var express = require('express');
-var router = express.Router();
+var cookieSession = require('cookie-session');
+var mainRouter = express.Router();
 
 //Import files
 const Auth = require('./Authentication');
 const Manager = require('./Manager');
 const Helpers = require('./Helpers');
-const SystemAdmin = require('./Systemadmin')
+const SystemAdmin = require('./SystemAdmin')
 
 //Connect to Datastore
 const Datastore = require('@google-cloud/datastore');
@@ -13,11 +14,8 @@ const datastore = new Datastore({
     projectId: "super-canvasser-cse308",
 });
 
-router.get('/', (req, res) => {
-    res.status(200).send('Hello, world!');
-});
 
-router.post('/login', (req, res) => {
+mainRouter.post('/login', (req, res) => {
     var role = req.body.role;
     var username = req.body.username;
     var password = req.body.password;
@@ -25,14 +23,30 @@ router.post('/login', (req, res) => {
     Auth.login(username, password, role, function(err, result) {
         if(result.length == 0) {
             res.status(500).send("Incorrect password or username");
-        }else{
-            res.status(200).send(result[0]);
+        } else{
+
+            // req.session.regenerate(function(err) {
+            //   // will have a new session here
+            //   req.session.key=result[0].Email;
+            //   req.session.Email = result[0].Email;
+            //   req.session.Name = result[0].Name;
+            //   req.session.UserGUID = result[0].UserGUID;
+            //   req.session.Username = result[0].Username;
+
+            //     res.status(200).send(req.session);
+            // })
+              req.session.Email = result[0].Email;
+              req.session.Name = result[0].Name;
+              req.session.UserGUID = result[0].UserGUID;
+              req.session.Username = result[0].Username;
+
+                res.status(200).send(req.session);
         }
     });
 });
 
 /** SYSTEM ADMIN **/
-router.post('/create_user', (req, res) => {
+mainRouter.post('/create_user', (req, res) => {
    console.log(req.body);
     SystemAdmin.create_user(req.body.user, req.body.Role, function(err, result) {
             res.status(200).send("Success");
@@ -40,7 +54,7 @@ router.post('/create_user', (req, res) => {
 
 });
 
-router.post('/delete_user', (req, res) => {
+mainRouter.post('/delete_user', (req, res) => {
     console.log(req.body);
      SystemAdmin.delete_user(req.body.username, req.body.Role, function(err, result) {
              res.status(200).send("Success");
@@ -49,11 +63,11 @@ router.post('/delete_user', (req, res) => {
  });
 
 /** CAVNASSER REQUESTS **/
-router.post('/assignments', function(req, res){
+mainRouter.post('/assignments', function(req, res){
     
 });
 
-router.post('/change_availability', (req, res) => {
+mainRouter.post('/change_availability', (req, res) => {
     var dates = req.body.dates;
     var user = req.body.username;
 
@@ -82,39 +96,39 @@ router.post('/change_availability', (req, res) => {
 });
 
 /** CAMPAIGN MANAGER REQUESTS **/
-router.post('/create_campaign', function(req, res){
+mainRouter.post('/create_campaign', function(req, res){
     Manager.create_campaign(req.body, function(err, result){
         res.status(200).send(result);
     });
 });
-router.post('/get_campaigns', function(req, res){
-    Manager.get_campaigns(req.body.UserGUID, function(err, result){
+mainRouter.post('/get_campaigns', function(req, res){
+  Manager.get_campaigns(req.session.UserGUID, function(err, result){
         res.status(200).send(result);
     });
-    
+
 });
-router.post('/get_campaign', function(req, res){
+mainRouter.post('/get_campaign', function(req, res){
     Manager.get_campaign(req.body.CampaignGUID, function(err, result){
         res.status(200).send(result);
     });
     
 });
-router.post('/get_canvassers', function(req, res){
+mainRouter.post('/get_canvassers', function(req, res){
     Manager.get_canvassers(function(err, result){
         res.status(200).send(result);
     });
     
 });
-router.post('/get_managers', function(req, res){
+mainRouter.post('/get_managers', function(req, res){
     Manager.get_managers(function(err, result){
         res.status(200).send(result);
     });
     
 });
-router.post('/add_manager_to_campaign', function(req, res){
+mainRouter.post('/add_manager_to_campaign', function(req, res){
     Manager.add_manager_to_campaign(req.body.ManagerGUID,req.body.CampaignGUID,function(err, result){
         res.status(200).send(result);
     });
     
 });
-module.exports = router;
+module.exports = mainRouter;
