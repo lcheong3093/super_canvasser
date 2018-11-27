@@ -24,6 +24,8 @@ module.exports = {
         entity.CampaignGUID = uuidv4();
         entity.Start = campaign.Start;
         entity.Talking_points = campaign.Talking_points;
+        entity.Managers = campaign.Managers;
+        entity.Canvassers = campaign.Canvassers;
 
         var key = datastore.key({
             path:["Campaign", null]
@@ -63,7 +65,16 @@ module.exports = {
         datastore.runQuery(query, function(err, entities) {
             if(err) throw err;
 
-            callback(null, entities);     
+            var canvasserList = [];
+
+            for(var i = 0; i< entities.length; i++) {
+                canvasserList.push({
+                    'CanvasserName': entities[i].Name,
+                    'CanvasserGUID': entities[i].CanvasserGUID
+                });
+            }
+
+            callback(null, canvasserList);     
         });
     },
     get_managers: function(callback){
@@ -71,7 +82,16 @@ module.exports = {
         datastore.runQuery(query, function(err, entities) {
             if(err) throw err;
 
-            callback(null, entities);     
+            var managerList = [];
+
+            for(var i = 0; i< entities.length; i++) {
+                managerList.push({
+                    'ManagerName': entities[i].Name,
+                    'ManagerGUID': entities[i].UserGUID
+                });
+            }
+
+            callback(null, managerList);     
         });
     },
     add_manager_to_campaign: function(managerGUID,campaignGUID,callback){
@@ -79,12 +99,18 @@ module.exports = {
         query.filter('UserGUID', managerGUID);
         datastore.runQuery(query, function(err, entities) {
             if(err) throw err;
+            console.log(entities);
+            if(entities.length > 0){
+                var campaigns = entities[0].Campaigns + ',' + campaignGUID;
+                entities[0].Campaigns = campaigns;
+                datastore.save(entities[0]);
 
-             var campaigns = entities[0].Campaigns + ',' + campaignGUID;
-             entities[0].Campaigns = campaigns;
-             datastore.save(entities[0]);
+                callback(err,"OK");
+            }
+            else {
 
-             callback(err,"OK");
+
+            }
 
         });
     }

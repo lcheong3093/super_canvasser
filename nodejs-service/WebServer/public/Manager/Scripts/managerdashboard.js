@@ -39,7 +39,7 @@ function CampaignListViewModel() {
 	self.openCampaign = function(campaign) {
 
 		campaignVM.openExistingCampaign(campaign);
-	}
+	};
 
 	self.newCampaign = function () {
 		campaignVM.newCampaign();
@@ -69,7 +69,23 @@ function CampaignViewModel() {
 
 	self.init = function() {
 
+		$.ajax({
+		  type: "POST",
+	      contentType: "application/json",
+	      url: '/api/get_managers',
+			xhrFields: { withCredentials: true }
+		}).done(function(data) {
+		  	self.managersToPick(data);
+		});
 
+		$.ajax({
+		  type: "POST",
+	      contentType: "application/json",
+	      url: '/api/get_canvassers',
+			xhrFields: { withCredentials: true }
+		}).done(function(data) {
+		  	self.canvassersToPick(data);
+		});
 	};
 
 	self.newCampaign = function () {
@@ -83,7 +99,9 @@ function CampaignViewModel() {
 			'Locations': self.locations(),
 			'Name': self.campaignName(),
 			'Start': self.startDate(),
-			'Talking_points': self.talkingPoints()
+			'Talking_points': self.talkingPoints(),
+			'Managers': self.managersAssigned(),
+			'Canvassers': self.canvassersAssigned()
 		};
 		$.ajax({
 		  type: "POST",
@@ -91,24 +109,29 @@ function CampaignViewModel() {
 	      url: '/api/create_campaign',
 	      data: JSON.stringify(input),
 		}).done(function(data) {
-			var input = {
-				'ManagerGUID' : getCookie('UserGUID'),
-				'CampaignGUID' : data
+			for(var i = 0; i < self.managersAssigned().length; i++) {
+				var input = {
+					'ManagerGUID' : self.managersAssigned()[i],
+					'CampaignGUID' : data
+				}
+			  	$.ajax({
+				  type: "POST",
+			      contentType: "application/json",
+			      url: '/api/add_manager_to_campaign',
+			      data: JSON.stringify(input),
+					}).done(function(data) {
+						if(getCookie('UserGUID') == input.ManagerGUID)
+					  		campaignListVM.init();
+					  	self.cancel();
+					});;
+
 			}
-		  	$.ajax({
-			  type: "POST",
-		      contentType: "application/json",
-		      url: '/api/add_manager_to_campaign',
-		      data: JSON.stringify(input),
-				}).done(function(data) {
-				  	campaignListVM.init();
-				  	self.cancel();
-				});;
+			
 		});
 	};
 
 	self.openExistingCampaign = function (campaign) {
-
+		debugger;
 		self.isEdit(false);
 		self.campaignName(campaign.Name);
 		self.canvassersAssigned(campaign.Canvassers);
@@ -117,6 +140,10 @@ function CampaignViewModel() {
 		self.questions(campaign.Questionnaire);
 		self.startDate(campaign.Start);
 		self.talkingPoints(campaign.Talking_points);
+
+		$("#canvasser-select").val(campaign.Canvassers).trigger('change');
+		$("#manager-select").val(campaign.Managers).trigger('change');
+
 		campaignViewDialog.dialog("open");
 		
 	};
@@ -133,6 +160,12 @@ function CampaignViewModel() {
 		self.startDate('');
 		self.talkingPoints('');
 		self.campaignName('');
+		self.canvassersAssigned([]);
+		self.managersAssigned([]);
+
+		$("#canvasser-select").val('').trigger('change');
+		$("#manager-select").val('').trigger('change');
+
 	};
 
 }
@@ -146,6 +179,7 @@ var campaignViewDialog = $("#campaign-view-modal").dialog({
 var campaignListVM = new CampaignListViewModel();
 var campaignVM = new CampaignViewModel();
 campaignListVM.init();
+campaignVM.init();
 
 ko.applyBindings(campaignListVM,$("#campaign-list")[0]);
 ko.applyBindings(campaignVM,$("#campaign-view-modal")[0]);
