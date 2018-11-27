@@ -122,3 +122,35 @@ label {
     height: 150px;
     width: 425px;
 }
+
+#profile-dropdown {
+    background-color:red;
+    text-align: center;
+    padding: 5px 10px;
+    color: white;
+    cursor: pointer;
+}
+#user-profile-header:hover #profile-dropdown {
+
+    display: block !important;
+
+}
+#username-holder {
+    font-size: 20px;
+    font-family: Roboto;
+    letter-spacing: 4px;
+}
+
+#campaign-modal-content {
+    height: 565px;
+    overflow-y: auto;
+    padding: 15px;
+}
+
+#campaign-view-modal {
+    padding: 0px;
+}
+
+.ui-widget-overlay {
+    background: black !important;
+}

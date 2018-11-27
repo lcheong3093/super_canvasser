@@ -25,20 +25,11 @@ mainRouter.post('/login', (req, res) => {
             res.status(500).send("Incorrect password or username");
         } else{
 
-            // req.session.regenerate(function(err) {
-            //   // will have a new session here
-            //   req.session.key=result[0].Email;
-            //   req.session.Email = result[0].Email;
-            //   req.session.Name = result[0].Name;
-            //   req.session.UserGUID = result[0].UserGUID;
-            //   req.session.Username = result[0].Username;
-
-            //     res.status(200).send(req.session);
-            // })
               req.session.Email = result[0].Email;
               req.session.Name = result[0].Name;
               req.session.UserGUID = result[0].UserGUID;
               req.session.Username = result[0].Username;
+              req.session.UserType = role;
 
                 res.status(200).send(req.session);
         }

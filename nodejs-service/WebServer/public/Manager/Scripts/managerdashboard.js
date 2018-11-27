@@ -175,6 +175,14 @@ var campaignViewDialog = $("#campaign-view-modal").dialog({
   autoOpen: false,
   width: 500,
   height: 700,
+  open: function () {
+        //Adds blacked out overlay
+        $('body').prepend('<div class="ui-widget-overlay ui-front"></div>');
+        
+    },
+    close: function () {
+        $('body').find('.ui-widget-overlay.ui-front').remove();
+    }
 });
 var campaignListVM = new CampaignListViewModel();
 var campaignVM = new CampaignViewModel();
