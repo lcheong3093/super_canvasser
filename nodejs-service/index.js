@@ -1,15 +1,30 @@
+var cookieSession = require('cookie-session');
 var express = require('express');
+var cookieParser = require('cookie-parser');
 var path = require('path');
 var bodyParser = require('body-parser');
 
 var app = express();
 
 var main = require('./routes/main');
+var webserver = require('./WebServer/webserver')
+
+app.use(cookieParser('bakaizet'));
+app.use(cookieSession({
+  name: 'session',
+  secret: 'bakaizet',
+  maxAge: 24 * 60 * 60 * 1000 // 24 hours
+}));
+
+app.set('trust proxy', 1) 
 
 app.use(bodyParser.json());
 app.use(bodyParser.raw());
 app.use(bodyParser.urlencoded({ extended: true }));
-app.use('/', main);
+
+
+app.use('/api', main);
+app.use('/web', webserver);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
