@@ -86,11 +86,11 @@
             </div>
             <div id="canvassers-input">
                 <label>Canvassers</label>
-                <select multiple="multiple" data-bind="options: canvassersToPick"></select>
+                <select multiple="multiple" id="canvasser-select" data-bind="options: canvassersToPick, optionsText: 'CanvasserName', optionsValue: 'CanvasserGUID', selectedOptions: canvassersAssigned"></select>
             </div>
             <div id="managers-input">
                 <label>Managers</label>
-                <select multiple="multiple" data-bind="options: managersToPick"></select>
+                <select multiple="multiple" id="manager-select" data-bind="options: managersToPick, optionsText: 'ManagerName', optionsValue: 'ManagerGUID',selectedOptions: managersAssigned"></select>
             </div>
             <br />
             <div style="margin-top:10px;display: inline-block;">
@@ -116,11 +116,11 @@
             </div>
             <div id="canvassers-input">
                 <label>Canvassers</label>
-                <select multiple="multiple" disabled data-bind="options: canvassersToPick"></select>
+                <select multiple="multiple" disabled data-bind="options: canvassersToPick, optionsText: 'CanvasserName', optionsValue: 'CanvasserGUID', selectedOptions: canvassersAssigned"></select>
             </div>
             <div id="managers-input">
                 <label>Managers</label>
-                <select multiple="multiple" disabled data-bind="options: managersToPick"></select>
+                <select multiple="multiple" disabled data-bind="options: managersToPick, optionsText: 'ManagerName', optionsValue: 'ManagerGUID',selectedOptions: managersAssigned"></select>
             </div>
             <br />
              <div style="margin-top:10px;display: inline-block;"> 

@@ -102,7 +102,7 @@
                 var nextPage;
                 $.post(authUrl, { 'username': user, 'password': pass, 'role' : role }).success(function (data) {
                     debugger;
-                    setCookie('UserGUID', data);
+                    setCookie('UserGUID', data.UserGUID);
 
                     if(role=="Manager")
                         window.open("/web/Manager/Dashboard.html","_self");
