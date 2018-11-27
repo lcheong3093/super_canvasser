@@ -42,7 +42,7 @@
 
         $(function () {
 
-            var username = getCookie("UserName");
+            var username = getCookie("UserFullName");
             var usertype = getCookie("UserType");
 
             $("#username-holder").text(username);
@@ -58,14 +58,18 @@
 <body>
     <div id="header">
         <img src="/web/Images/logo.png" />
-        <div id="user-profile-header">
-            <span>User Name: </span><span id="username-holder"> </span> <br />
+        <div id="user-profile-header" style="padding-top: 15px;">
+            <span id="username-holder"> </span> <br />
+            <div id="profile-dropdown" style="display:none">
+                <div onclick="window.open('/web/','_self');">Logout</div>
+            </div>
         </div>
+        
         
     </div>
    
 
-    <div id="campaign-list">
+    <div id="campaign-list" style="padding-top: 10px;">
         <div id="campaign-list-header">
             <div id="campaign-list-header-title">Campaigns</div>
             <div id="add-campaign-btn" data-bind="click: newCampaign"> + </div>
@@ -80,7 +84,8 @@
     </div>
 
     <div id="campaign-view-modal" style="display: none;" title="Create Campaign">
-        <div id="editing-view" data-bind="visible: isEdit">
+        <div id="campaign-modal-content">
+            <div id="editing-view" data-bind="visible: isEdit">
             <div>
                 <input placeholder="Campaign Name" type="text" data-bind="value: campaignName" id="campaign-name-input"/>
             </div>
@@ -146,7 +151,7 @@
                 <textarea disabled data-bind="value: talkingPoints"></textarea>
             </div>
         </div>
-
+        </div>
         <div class="modal-footer">
             
             <div class="save-btn" data-bind="click: saveCampaign">SAVE</div>

@@ -1,12 +1,9 @@
 var express = require('express');
 var cookieSession = require('cookie-session')
-//var app = express();
 var webserverRouter = express.Router();
 
-//router.use(express.static('public'));
-
-
 webserverRouter.get('/', function (req, res) {
+	req.session = null;
    res.sendFile( __dirname + "/public/" + "login.html" );
 })
 
@@ -23,7 +20,10 @@ webserverRouter.get('/Manager/Style/dashboard.css', function (req, res) {
    res.sendFile( __dirname + "/public/Manager/Style/dashboard.css");
 });
 webserverRouter.get('/Manager/Dashboard.html', function (req, res) {
-   res.sendFile( __dirname + "/public/Manager/Dashboard.html");
+	if(req.session && req.session.UserType == "Manager")
+   		res.sendFile( __dirname + "/public/Manager/Dashboard.html");
+   	else
+   		res.redirect('/web'); 
 });
 
 
