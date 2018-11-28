@@ -8,6 +8,7 @@
   integrity="sha256-iT6Q9iMJYuQiMWNd9lDyBUStIq/8PuOW33aOqmvFpqI="
   crossorigin="anonymous"></script>
   <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet"> 
+       
         <script src="https://cdnjs.cloudflare.com/ajax/libs/knockout/3.4.2/knockout-min.js"></script>
         <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
         <link rel="stylesheet" type="text/css" href="/web/Manager/Style/dashboard.css"></link>
@@ -20,7 +21,7 @@
     <script src="https://unpkg.com/leaflet@1.3.4/dist/leaflet.js"
    integrity="sha512-nMMmRyTVoLYqjP9hrbed9S+FzjZHW5gY1TWCHA5ckwXZBadntCNs8kEqAWdrb9O7rxbCaA4lKTIWjDXZxflOcA=="
    crossorigin=""></script>
-
+    <script type="text/javascript" src="http://maps.stamen.com/js/tile.stamen.js?v1.3.0"></script>
         <script>
         function setCookie(cname, cvalue, exdays) {
             var d = new Date();
@@ -74,13 +75,40 @@
             <div id="campaign-list-header-title">Campaigns</div>
             <div id="add-campaign-btn" data-bind="click: newCampaign"> + </div>
         </div>
-        <div data-bind="foreach: list">
+        <div class="campaign-list-container clearfix" data-bind="visible: pendinglist().length>0">
+            <div class="status-title">Pending Campaigns</div>
+            <div data-bind="foreach: pendinglist">
 
-            <div class="campaign-list-block" data-bind="click: $root.openCampaign">
-                <div class="campaign-list-block-name" data-bind="text: Name"></div>
+                <div class="campaign-list-block" data-bind="click: $root.openCampaign">
+                    <div class="campaign-list-block-name" data-bind="text: Name"></div>
+                </div>
+
             </div>
-
         </div>
+        <br />
+        <div class="campaign-list-container clearfix" data-bind="visible: activelist().length>0">
+            <div class="status-title">Active Campaigns</div>
+            <div data-bind="foreach: activelist">
+
+                <div class="campaign-list-block" data-bind="click: $root.openCampaign">
+                    <div class="campaign-list-block-name" data-bind="text: Name"></div>
+                </div>
+
+            </div>
+        </div>
+         <br />
+        <div class="campaign-list-container clearfix" data-bind="visible: completedlist().length>0">
+            <div class="status-title">Completed Campaigns</div>
+            <div data-bind="foreach: completedlist">
+
+                <div class="campaign-list-block" data-bind="click: $root.openCampaign">
+                    <div class="campaign-list-block-name" data-bind="text: Name"></div>
+                </div>
+
+            </div>
+        </div>
+
+
     </div>
 
     <div id="campaign-view-modal" style="display: none;" title="Create Campaign">
@@ -100,7 +128,7 @@
             <br />
             <div style="margin-top:10px;display: inline-block;">
                 <label>Locations</label>
-                <textarea data-bind="value: locations"></textarea>
+                <textarea style="font-size:10px;" data-bind="value: locations"></textarea>
             </div>
             <div style="margin-top:10px;display: inline-block;">
                 <label>Questions</label>
@@ -136,7 +164,7 @@
             </div>
             <div style="margin-top:10px;display: inline-block;">
                 <label>Locations</label>
-                <textarea disabled data-bind="value: locations"></textarea>
+                <textarea style="font-size:10px;" disabled data-bind="value: locations"></textarea>
             </div>
             <div style="margin-top:10px;display: inline-block;">
                 <label>Questions</label>

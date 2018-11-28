@@ -3,6 +3,10 @@ const datastore = new Datastore({
     projectId: "super-canvasser-cse308",
 });
 
+const googleMapsClient = require('@google/maps').createClient({
+  key: 'AIzaSyB24uWl3butGDLy1v6GpDy44r6nBwidBVM'
+});
+
 const Helpers = require('./Helpers');
 
 function uuidv4() {
@@ -26,18 +30,48 @@ module.exports = {
         entity.Talking_points = campaign.Talking_points;
         entity.Managers = campaign.Managers;
         entity.Canvassers = campaign.Canvassers;
+        
+        var ToGeocode = locations.split(/\r?\n/);
+        var coordinates = [];
 
-        var key = datastore.key({
-            path:["Campaign", null]
-        });
+        var encodedAddresses = 0;
 
-        var insert = {key: key, data: entity};
+        for (var i = 0; i < ToGeocode.length; i++) {
+            
+            googleMapsClient.geocode({
+                  address: ToGeocode[i]
+                }, function(err, response) {
+                    encodedAddresses++;
+                  if (!err) {
+                    var responseGeo = response.json.results[0].geometry.location;
 
-        datastore.save(insert, function(err){
-            if(err) throw err;
+                    coordinates.push([responseGeo.lat, responseGeo.lng]);
+                  }
+                  else{
+                    
+                  }
+                
+                    if(encodedAddresses == ToGeocode.length) {
 
-            callback(err,entity.CampaignGUID);
-        });
+                        entity.LocationsCoordinates = JSON.stringify(coordinates);
+
+                        var key = datastore.key({
+                            path:["Campaign", null]
+                        });
+
+                        var insert = {key: key, data: entity};
+
+                        datastore.save(insert, function(err){
+                            if(err) throw err;
+
+                            callback(err,entity.CampaignGUID);
+                        }) 
+
+                    }
+                }
+            );
+        }
+
     },
     get_campaigns: function(managerGUID,callback) {
         const query = datastore.createQuery("Manager");
@@ -99,7 +133,6 @@ module.exports = {
         query.filter('UserGUID', managerGUID);
         datastore.runQuery(query, function(err, entities) {
             if(err) throw err;
-            console.log(entities);
             if(entities.length > 0){
                 var campaigns = entities[0].Campaigns + ',' + campaignGUID;
                 entities[0].Campaigns = campaigns;

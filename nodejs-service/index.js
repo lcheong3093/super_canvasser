@@ -3,6 +3,7 @@ var express = require('express');
 var cookieParser = require('cookie-parser');
 var path = require('path');
 var bodyParser = require('body-parser');
+var Promise = require("bluebird");
 
 var app = express();
 

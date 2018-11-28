@@ -1,13 +1,19 @@
 
-var campaignsJS = [];
+var pendingCampaignsJS = [];
+var activeCampaignsJS = [];
+var completedCampaignsJS = [];
 
 function CampaignListViewModel() {
 	var self = this;
 
-	self.list = ko.observableArray();
+	self.pendinglist = ko.observableArray();
+	self.activelist = ko.observableArray();
+	self.completedlist = ko.observableArray();
 
 	self.init = function () {
-		campaignsJS = [];
+		pendingCampaignsJS = [];
+		activeCampaignsJS = [];
+		completedCampaignsJS = [];
 		var input = { 
 			'UserGUID' : getCookie('UserGUID')
 		 };
@@ -28,8 +34,18 @@ function CampaignListViewModel() {
 			      url: '/api/get_campaign',
 			      data: JSON.stringify(input),
 				}).done(function(data) {
-				  	campaignsJS.push(data);
-				  	self.list(campaignsJS);
+					if(data.Status == "Pending"){
+						pendingCampaignsJS.push(data);
+				  		self.pendinglist(pendingCampaignsJS);
+					}
+					else if(data.Status == "Active"){
+						activeCampaignsJS.push(data);
+				  		self.activelist(activeCampaignsJS);
+					}			
+					else {
+						completedCampaignsJS.push(data);
+				  		self.completedlist(completedCampaignsJS);
+					}	  	
 				});
 
 		  	}
@@ -101,7 +117,8 @@ function CampaignViewModel() {
 			'Start': self.startDate(),
 			'Talking_points': self.talkingPoints(),
 			'Managers': self.managersAssigned(),
-			'Canvassers': self.canvassersAssigned()
+			'Canvassers': self.canvassersAssigned(),
+			'Status': 'Pending'
 		};
 		$.ajax({
 		  type: "POST",
@@ -131,7 +148,7 @@ function CampaignViewModel() {
 	};
 
 	self.openExistingCampaign = function (campaign) {
-		debugger;
+		
 		self.isEdit(false);
 		self.campaignName(campaign.Name);
 		self.canvassersAssigned(campaign.Canvassers);
@@ -144,6 +161,17 @@ function CampaignViewModel() {
 		$("#canvasser-select").val(campaign.Canvassers).trigger('change');
 		$("#manager-select").val(campaign.Managers).trigger('change');
 
+		if(campaign.LocationsCoordinates){
+			var parsedLocations = JSON.parse(campaign.LocationsCoordinates);
+			parsedLocations.forEach(function(location){
+
+        		markersLayer.addLayer(L.marker(location)); 
+				locationmap.setView(location);
+
+			});
+			
+		}
+
 		campaignViewDialog.dialog("open");
 		
 	};
@@ -154,6 +182,7 @@ function CampaignViewModel() {
 	};
 
 	self.cleanModal = function () {
+		markersLayer.clearLayers();
 		self.isEdit(true);
 		self.locations('');
 		self.questions('');
@@ -178,7 +207,7 @@ var campaignViewDialog = $("#campaign-view-modal").dialog({
   open: function () {
         //Adds blacked out overlay
         $('body').prepend('<div class="ui-widget-overlay ui-front"></div>');
-        
+        locationmap.invalidateSize();
     },
     close: function () {
         $('body').find('.ui-widget-overlay.ui-front').remove();
@@ -191,18 +220,19 @@ campaignVM.init();
 
 ko.applyBindings(campaignListVM,$("#campaign-list")[0]);
 ko.applyBindings(campaignVM,$("#campaign-view-modal")[0]);
-
+var locationmap;
+var markersLayer;
+var mapmarkers = [];
 $( document ).ready(function() {
     $("select").select2({
     	tags: true
     });
-
-    var mymap = L.map('locations-map').setView([40.92, -73.13], 13);
-
-    L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoiZGlub211ZnRpYyIsImEiOiJjam82aWRwdDgwNmc1M2tvM3Z6bjVybzdkIn0.2SdesRBzPBzAABi4xOAiFw', {
-    attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
-    maxZoom: 18,
-    id: 'mapbox.streets',
-    accessToken: 'pk.eyJ1IjoiZGlub211ZnRpYyIsImEiOiJjam82aWRwdDgwNmc1M2tvM3Z6bjVybzdkIn0.2SdesRBzPBzAABi4xOAiFw'
-}).addTo(mymap);
+    var layer = new L.StamenTileLayer("toner");
+    markersLayer = new L.LayerGroup();
+	locationmap = new L.Map("locations-map", {
+    	center: new L.LatLng(37.7, -122.4),
+    	zoom: 12
+	});
+	locationmap.addLayer(layer);
+    markersLayer.addTo(locationmap);
 });
