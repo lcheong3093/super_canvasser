@@ -34,18 +34,22 @@ function CampaignListViewModel() {
 			      url: '/api/get_campaign',
 			      data: JSON.stringify(input),
 				}).done(function(data) {
-					if(data.Status == "Pending"){
-						pendingCampaignsJS.push(data);
-				  		self.pendinglist(pendingCampaignsJS);
+					if(data) {
+						
+						if(data.Status == "Pending"){
+							pendingCampaignsJS.push(data);
+					  		self.pendinglist(pendingCampaignsJS);
+						}
+						else if(data.Status == "Active"){
+							activeCampaignsJS.push(data);
+					  		self.activelist(activeCampaignsJS);
+						}			
+						else {
+							completedCampaignsJS.push(data);
+					  		self.completedlist(completedCampaignsJS);
+						}	
 					}
-					else if(data.Status == "Active"){
-						activeCampaignsJS.push(data);
-				  		self.activelist(activeCampaignsJS);
-					}			
-					else {
-						completedCampaignsJS.push(data);
-				  		self.completedlist(completedCampaignsJS);
-					}	  	
+					  	
 				});
 
 		  	}

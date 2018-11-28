@@ -73,6 +73,11 @@ module.exports = {
         }
 
     },
+    update_campaign: function(campaignGUID,callback) {
+        
+        callback(null, "placeholder");     
+
+    },
     get_campaigns: function(managerGUID,callback) {
         const query = datastore.createQuery("Manager");
         query.filter('UserGUID', managerGUID);
