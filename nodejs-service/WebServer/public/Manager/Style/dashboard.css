@@ -81,7 +81,7 @@ label {
 }
 
 #campaign-view-modal select {
-	width: 200px;
+	width: 220px;
 }
 
 #canvassers-input, #managers-input {
@@ -96,7 +96,7 @@ label {
 }
 
 #campaign-view-modal textarea {
-	width: 425px;
+	width: 450px;
     height: 100px;
 }
 
@@ -120,7 +120,7 @@ label {
 
 #locations-map {
     height: 150px;
-    width: 425px;
+    width: 450px;
 }
 
 #profile-dropdown {
@@ -153,4 +153,18 @@ label {
 
 .ui-widget-overlay {
     background: black !important;
+}
+
+.clearfix::after {
+    content: "";
+    clear: both;
+    display: table;
+}
+
+.status-title {
+    font-family: Roboto;
+    font-size: 20px;
+    padding-left: 30px;
+    border-top: 1px black solid;
+    padding-top: 10px;
 }
