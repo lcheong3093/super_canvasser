@@ -25,32 +25,19 @@ function CampaignListViewModel() {
 	      data: JSON.stringify(input),
 		}).done(function(data) {
 		  	for(var i =0;i<data.length; i++){
-		  		var input = { 
-					'CampaignGUID' : data[i]
-				 };
-				$.ajax({
-				  type: "POST",
-			      contentType: "application/json",
-			      url: '/api/get_campaign',
-			      data: JSON.stringify(input),
-				}).done(function(data) {
-					if(data) {
-						
-						if(data.Status == "Pending"){
-							pendingCampaignsJS.push(data);
-					  		self.pendinglist(pendingCampaignsJS);
-						}
-						else if(data.Status == "Active"){
-							activeCampaignsJS.push(data);
-					  		self.activelist(activeCampaignsJS);
-						}			
-						else {
-							completedCampaignsJS.push(data);
-					  		self.completedlist(completedCampaignsJS);
-						}	
-					}
-					  	
-				});
+
+		  		if(data[i].Status == "Pending"){
+					pendingCampaignsJS.push(data[i]);
+			  		self.pendinglist(pendingCampaignsJS);
+				}
+				else if(data[i].Status == "Active"){
+					activeCampaignsJS.push(data[i]);
+			  		self.activelist(activeCampaignsJS);
+				}			
+				else {
+					completedCampaignsJS.push(data[i]);
+			  		self.completedlist(completedCampaignsJS);
+				}	
 
 		  	}
 		});
@@ -86,6 +73,7 @@ function CampaignViewModel() {
 	self.talkingPoints = ko.observable('');
 
 	self.isEdit = ko.observable(true);
+	self.isNew = ko.observable(true);
 
 	self.init = function() {
 
@@ -110,6 +98,7 @@ function CampaignViewModel() {
 
 	self.newCampaign = function () {
 		self.isEdit(true);
+		self.isNew(true);
 		campaignViewDialog.dialog("open");
 	};
 
@@ -151,9 +140,47 @@ function CampaignViewModel() {
 		});
 	};
 
+	self.updateCampaign = function () {
+		var input = {
+			'Questionnaire': self.questions(),
+			'Locations': self.locations(),
+			'Name': self.campaignName(),
+			'Start': self.startDate(),
+			'Talking_points': self.talkingPoints(),
+			'Managers': self.managersAssigned(),
+			'Canvassers': self.canvassersAssigned()
+		};
+		$.ajax({
+		  type: "POST",
+	      contentType: "application/json",
+	      url: '/api/update_campaign',
+	      data: JSON.stringify(input),
+		}).done(function(data) {
+			for(var i = 0; i < self.managersAssigned().length; i++) {
+				var input = {
+					'ManagerGUID' : self.managersAssigned()[i],
+					'CampaignGUID' : data
+				}
+			  	$.ajax({
+				  type: "POST",
+			      contentType: "application/json",
+			      url: '/api/add_manager_to_campaign',
+			      data: JSON.stringify(input),
+					}).done(function(data) {
+						if(getCookie('UserGUID') == input.ManagerGUID)
+					  		campaignListVM.init();
+					  	self.cancel();
+					});;
+
+			}
+			
+		});
+	};
+
 	self.openExistingCampaign = function (campaign) {
 		
 		self.isEdit(false);
+		self.isNew(false);
 		self.campaignName(campaign.Name);
 		self.canvassersAssigned(campaign.Canvassers);
 		self.managersAssigned(campaign.Managers);
@@ -188,6 +215,7 @@ function CampaignViewModel() {
 	self.cleanModal = function () {
 		markersLayer.clearLayers();
 		self.isEdit(true);
+		self.isNew(true);
 		self.locations('');
 		self.questions('');
 		self.startDate('');
@@ -199,6 +227,10 @@ function CampaignViewModel() {
 		$("#canvasser-select").val('').trigger('change');
 		$("#manager-select").val('').trigger('change');
 
+	};
+
+	self.editCampaign = function () {
+		self.isEdit(true);
 	};
 
 }
