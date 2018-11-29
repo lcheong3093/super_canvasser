@@ -148,13 +148,4 @@ mainRouter.post('/get_managers', function(req, res){
         res.status(401).send("Unauthorized");
     
 });
-mainRouter.post('/add_manager_to_campaign', function(req, res){
-    if(req.session) {
-        Manager.add_manager_to_campaign(req.body.ManagerGUID,req.body.CampaignGUID,function(err, result){
-            res.status(200).send(result);
-        });
-    }
-    else
-        res.status(401).send("Unauthorized");
-});
 module.exports = mainRouter;

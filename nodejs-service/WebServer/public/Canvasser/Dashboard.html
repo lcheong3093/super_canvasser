@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" class="no-js" lang="en">
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <meta charset="utf-8">
+    <title>Canvasser Dashboard | Super Canvasser</title>
+    <script
+  src="https://code.jquery.com/jquery-2.2.4.js"
+  integrity="sha256-iT6Q9iMJYuQiMWNd9lDyBUStIq/8PuOW33aOqmvFpqI="
+  crossorigin="anonymous"></script>
+  <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet"> 
+
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/knockout/3.4.2/knockout-min.js"></script>
+        <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
+        <link rel="stylesheet" type="text/css" href="/web/Canvasser/Style/dashboard.css"></link>
+        <link rel="stylesheet" type="text/css" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/themes/flick/jquery-ui.css"></link>
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/css/select2.min.css" rel="stylesheet" />
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/js/select2.min.js"></script>
+        <link rel="stylesheet" href="https://unpkg.com/leaflet@1.3.4/dist/leaflet.css"
+   integrity="sha512-puBpdR0798OZvTTbP4A8Ix/l+A4dHDD0DGqYW6RQ+9jxkRFclaxxQb/SJAWZfWAkuyeQUytO7+7N4QKrDh+drA=="
+   crossorigin=""/>
+    <script src="https://unpkg.com/leaflet@1.3.4/dist/leaflet.js"
+   integrity="sha512-nMMmRyTVoLYqjP9hrbed9S+FzjZHW5gY1TWCHA5ckwXZBadntCNs8kEqAWdrb9O7rxbCaA4lKTIWjDXZxflOcA=="
+   crossorigin=""></script>
+    <script type="text/javascript" src="http://maps.stamen.com/js/tile.stamen.js?v1.3.0"></script>
+    <script src="https://use.fontawesome.com/cd099f8389.js"></script>
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.5.0/css/all.css" integrity="sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU" crossorigin="anonymous">
+        <script>
+        function setCookie(cname, cvalue, exdays) {
+            var d = new Date();
+            d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000));
+            var expires = "expires=" + d.toUTCString();
+            document.cookie = cname + "=" + cvalue + "; " + expires;
+        }
+
+        function getCookie(cname) {
+            var name = cname + "=";
+            var ca = document.cookie.split(';');
+            for (var i = 0; i < ca.length; i++) {
+                var c = ca[i];
+                while (c.charAt(0) == ' ') c = c.substring(1);
+                if (c.indexOf(name) != -1) return c.substring(name.length, c.length);
+            }
+            return "";
+        }
+
+        $(function () {
+
+            var username = getCookie("UserFullName");
+            var usertype = getCookie("UserType");
+
+            $("#username-holder").text(username);
+            $("#usertype-holder").text(usertype);
+        }); 
+
+
+    </script>
+
+ 
+</head>
+
+<body>
+    <div id="header">
+        <img src="/web/Images/logo.png" />
+        <div id="user-profile-header" style="padding-top: 15px;">
+            <span id="username-holder"> </span> <br />
+            <div id="profile-dropdown" style="display:none">
+                <div onclick="window.open('/web/','_self');">Logout</div>
+            </div>
+        </div>
+
+    </div>
+   
+
+    <div id="task-list" style="padding-top: 10px;">
+        <div id="task-list-header">
+            <div id="task-list-header-title">Tasks</div>
+            <i class="fa fa-refresh" aria-hidden="true" data-bind="click: init"></i>
+        </div>
+        <div class="task-list-container clearfix" data-bind="visible: activelist().length>0">
+            <div class="status-title">Active Tasks</div>
+            <div data-bind="foreach: activelist">
+
+                <div class="task-list-block" data-bind="click: $root.openCampaign">
+                    <div class="task-list-block-name" data-bind="text: Name"></div>
+                </div>
+
+            </div>
+        </div>
+        <br />
+        <div class="task-list-container clearfix" data-bind="visible: completedlist().length>0">
+            <div class="status-title">Completed Tasks</div>
+            <div data-bind="foreach: completedlist">
+
+                <div class="task-list-block" data-bind="click: $root.openCampaign">
+                    <div class="task-list-block-name" data-bind="text: Name"></div>
+                </div>
+
+            </div>
+        </div>
+
+
+    </div>
+
+    <div id="task-view-modal" style="display: none;" title="Create task">
+        <div id="task-modal-content">
+            <div id="editing-view" data-bind="visible: isEdit">
+            <div>
+                <input placeholder="Task Name" type="text" data-bind="value: campaignName" id="task-name-input"/>
+            </div>
+            <div id="canvassers-input">
+                <label>Canvassers</label>
+                <select multiple="multiple" id="canvasser-select" data-bind="options: canvassersToPick, optionsText: 'CanvasserName', optionsValue: 'CanvasserGUID', selectedOptions: canvassersAssigned"></select>
+            </div>
+            <div id="managers-input">
+                <label>Managers</label>
+                <select multiple="multiple" id="manager-select" data-bind="options: managersToPick, optionsText: 'ManagerName', optionsValue: 'ManagerGUID',selectedOptions: managersAssigned"></select>
+            </div>
+            <br />
+            <div style="margin-top:10px;display: inline-block;">
+                <label>Locations</label>
+                <textarea style="font-size:10px;" data-bind="value: locations"></textarea>
+            </div>
+            <div style="margin-top:10px;display: inline-block;">
+                <label>Questions</label>
+                <textarea data-bind="value: questions"></textarea>
+            </div>
+            <div style="margin-top:10px;display: inline-block;">
+                <label>Start Date</label>
+                <input type="text" data-bind="value: startDate"></textarea>
+            </div>
+            <div style="margin-top:10px;display: inline-block;">
+                <label>Talking Points</label>
+                <textarea data-bind="value: talkingPoints"></textarea>
+            </div>
+        </div>
+        <div id="no-editing-view" data-bind="visible: !isEdit()">
+            <div>
+                <input disabled placeholder="task Name" type="text" data-bind="value: campaignName" id="task-name-input"/>
+            </div>
+            <div id="canvassers-input">
+                <label>Canvassers</label>
+                <textarea disabled data-bind="value: canvasserNameList" style="width:220px;height:55px;font-size: 12px;"></textarea>
+            </div>
+            <div id="managers-input">
+                <label>Managers</label>
+                <textarea disabled data-bind="value: managerNameList" style="width:220px;height:55px;font-size: 12px;"></textarea>
+            </div>
+            <br />
+             <div style="margin-top:10px;display: inline-block;"> 
+                <label>Map</label>
+                <div id="locations-map">
+
+                </div>
+            </div>
+            <div style="margin-top:10px;display: inline-block;">
+                <label>Locations</label>
+                <textarea style="font-size:10px;" disabled data-bind="value: locations"></textarea>
+            </div>
+            <div style="margin-top:10px;display: inline-block;">
+                <label>Questions</label>
+                <textarea disabled data-bind="value: questions" style="font-size:12px;"></textarea>
+            </div>
+            <div style="margin-top:10px;display: inline-block;">
+                <label>Start Date</label>
+                <input disabled type="text" data-bind="value: startDate"></textarea>
+            </div>
+            <div style="margin-top:10px;display: inline-block;">
+                <label>Talking Points</label>
+                <textarea disabled data-bind="value: talkingPoints" style="font-size:12px;"></textarea>
+            </div>
+        </div>
+        </div>
+        <div class="modal-footer">
+            
+            <div class="save-btn modal-btn" data-bind="click: saveCampaign,visible: isNew">SAVE</div>
+            <div class="update-btn modal-btn" data-bind="click: updateCampaign, visible: !isNew() && isEdit()">UPDATE</div>
+            <div class="edit-btn modal-btn" data-bind="click: editCampaign, visible: !isNew() && !isEdit()">EDIT</div>
+            <div class="cancel-btn modal-btn" data-bind="click: cancel">CANCEL</div>
+
+        </div>
+    </div>
+
+</body>
+<script src="/web/Canvasser/Scripts/canvasserdashboard.js"></script>
+</html>
