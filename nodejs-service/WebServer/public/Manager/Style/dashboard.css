@@ -113,7 +113,12 @@ label {
 .save-btn {
 	background-color: #56d856;
 }
-
+.update-btn {
+    background-color: #56d856;
+}
+.edit-btn {
+    background-color: #56d856;
+}
 .cancel-btn {
 	background-color: #ff4c4c;
 }
@@ -168,3 +173,22 @@ label {
     border-top: 1px black solid;
     padding-top: 10px;
 }
+
+.fa-refresh {
+    padding: 14px;
+    margin-right: 10px;
+    cursor: pointer;
+    border-radius: 50%;
+    margin-top: 3px;
+    color: white;
+    float:right;
+}
+.fa-refresh:hover {
+    background-color: #6bb5f5;
+}
+
+.modal-btn {
+    color:white;
+}
+
+ 

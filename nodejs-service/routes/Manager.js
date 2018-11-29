@@ -73,13 +73,83 @@ module.exports = {
         }
 
     },
-    get_campaigns: function(managerGUID,callback) {
-        const query = datastore.createQuery("Manager");
-        query.filter('UserGUID', managerGUID);
+    update_campaign: function(campaign,callback) {
+        
+        const query = datastore.createQuery("Campaign");
+        query.filter('CampaignGUID', campaign.CampaignGUID);
         datastore.runQuery(query, function(err, entities) {
             if(err) throw err;
 
-            campaigns = entities[0].Campaigns.split(',');
+            if(entities.length > 0){
+                
+                var questionnaire = campaign.Questionnaire;
+                var locations = campaign.Locations;
+
+                entities[0].Locations = locations;
+                entities[0].Questionnaire = questionnaire;
+                entities[0].Name = campaign.Name;
+                entities[0].Start = campaign.Start;
+                entities[0].Talking_points = campaign.Talking_points;
+                entities[0].Managers = campaign.Managers;
+                entities[0].Canvassers = campaign.Canvassers;
+
+                var ToGeocode = locations.split(/\r?\n/);
+                var coordinates = [];
+
+                var encodedAddresses = 0;
+                debugger;
+                for (var i = 0; i < ToGeocode.length; i++) {
+                    
+                    googleMapsClient.geocode({
+                          address: ToGeocode[i]
+                        }, function(err, response) {
+                            encodedAddresses++;
+                          if (!err) {
+                            var responseGeo = response.json.results[0].geometry.location;
+
+                            coordinates.push([responseGeo.lat, responseGeo.lng]);
+                          }
+                          else{
+                            
+                          }
+                            debugger;
+                            if(encodedAddresses == ToGeocode.length) {
+
+                                entities[0].LocationsCoordinates = JSON.stringify(coordinates);
+
+                                datastore.save(entities[0],function(err){
+                                    if(err) throw err;
+
+                                    callback(err,"OK");
+                                });
+
+                            }
+                        }
+                    );
+                }
+
+                
+
+                
+            }
+            else {
+
+
+            }    
+        });   
+
+    },
+    get_campaigns: function(managerGUID,callback) {
+        const query = datastore.createQuery("Campaign");
+        datastore.runQuery(query, function(err, entities) {
+            if(err) throw err;
+
+            var campaigns = [];
+            for(var i = 0; i<entities.length; i++){
+                if(entities[i].Managers && entities[i].Managers.includes(managerGUID)){
+                    campaigns.push(entities[i]);
+                }
+            }
 
             callback(null, campaigns);     
         });
@@ -134,11 +204,17 @@ module.exports = {
         datastore.runQuery(query, function(err, entities) {
             if(err) throw err;
             if(entities.length > 0){
-                var campaigns = entities[0].Campaigns + ',' + campaignGUID;
-                entities[0].Campaigns = campaigns;
-                datastore.save(entities[0]);
+                if(entities[0].Campaigns.includes(campaignGUID)){
+                    callback(err,"OK");
+                }
+                else {
+                    var campaigns = entities[0].Campaigns + ',' + campaignGUID;
+                    entities[0].Campaigns = campaigns;
+                    datastore.save(entities[0]);
 
-                callback(err,"OK");
+                    callback(err,"OK");
+                }
+                
             }
             else {
 

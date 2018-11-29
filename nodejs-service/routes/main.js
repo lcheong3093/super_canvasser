@@ -88,38 +88,73 @@ mainRouter.post('/change_availability', (req, res) => {
 
 /** CAMPAIGN MANAGER REQUESTS **/
 mainRouter.post('/create_campaign', function(req, res){
-    Manager.create_campaign(req.body, function(err, result){
-        res.status(200).send(result);
-    });
+    if(req.session && req.session.UserType == "Manager")
+    {
+        Manager.create_campaign(req.body, function(err, result){
+            res.status(200).send(result);
+        });
+    }
+    else 
+        res.status(401).send("Unauthorized");
+    
+});
+mainRouter.post('/update_campaign', function(req, res){
+    if(req.session && req.session.UserType == "Manager")
+    {
+        Manager.update_campaign(req.body, function(err, result){
+            res.status(200).send(result);
+        });
+    }
+    else 
+        res.status(401).send("Unauthorized");
 });
 mainRouter.post('/get_campaigns', function(req, res){
-  Manager.get_campaigns(req.session.UserGUID, function(err, result){
-        res.status(200).send(result);
-    });
+    if(req.session && req.session.UserType == "Manager"){
+        Manager.get_campaigns(req.session.UserGUID, function(err, result){
+            res.status(200).send(result);
+        });
+    }
+    else 
+        res.status(401).send("Unauthorized");
 
 });
 mainRouter.post('/get_campaign', function(req, res){
-    Manager.get_campaign(req.body.CampaignGUID, function(err, result){
-        res.status(200).send(result);
-    });
+    if(req.session) {
+        Manager.get_campaign(req.body.CampaignGUID, function(err, result){
+            res.status(200).send(result);
+        });
+    }
+    else 
+        res.status(401).send("Unauthorized");
     
 });
 mainRouter.post('/get_canvassers', function(req, res){
-    Manager.get_canvassers(function(err, result){
-        res.status(200).send(result);
-    });
+    if(req.session) {
+        Manager.get_canvassers(function(err, result){
+            res.status(200).send(result);
+        });
+    }
+    else 
+        res.status(401).send("Unauthorized");
     
 });
 mainRouter.post('/get_managers', function(req, res){
-    Manager.get_managers(function(err, result){
-        res.status(200).send(result);
-    });
+    if(req.session) {
+        Manager.get_managers(function(err, result){
+            res.status(200).send(result);
+        });
+    }
+    else
+        res.status(401).send("Unauthorized");
     
 });
 mainRouter.post('/add_manager_to_campaign', function(req, res){
-    Manager.add_manager_to_campaign(req.body.ManagerGUID,req.body.CampaignGUID,function(err, result){
-        res.status(200).send(result);
-    });
-    
+    if(req.session) {
+        Manager.add_manager_to_campaign(req.body.ManagerGUID,req.body.CampaignGUID,function(err, result){
+            res.status(200).send(result);
+        });
+    }
+    else
+        res.status(401).send("Unauthorized");
 });
 module.exports = mainRouter;

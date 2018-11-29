@@ -8,7 +8,7 @@
   integrity="sha256-iT6Q9iMJYuQiMWNd9lDyBUStIq/8PuOW33aOqmvFpqI="
   crossorigin="anonymous"></script>
   <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet"> 
-       
+
         <script src="https://cdnjs.cloudflare.com/ajax/libs/knockout/3.4.2/knockout-min.js"></script>
         <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
         <link rel="stylesheet" type="text/css" href="/web/Manager/Style/dashboard.css"></link>
@@ -22,6 +22,8 @@
    integrity="sha512-nMMmRyTVoLYqjP9hrbed9S+FzjZHW5gY1TWCHA5ckwXZBadntCNs8kEqAWdrb9O7rxbCaA4lKTIWjDXZxflOcA=="
    crossorigin=""></script>
     <script type="text/javascript" src="http://maps.stamen.com/js/tile.stamen.js?v1.3.0"></script>
+    <script src="https://use.fontawesome.com/cd099f8389.js"></script>
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.5.0/css/all.css" integrity="sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU" crossorigin="anonymous">
         <script>
         function setCookie(cname, cvalue, exdays) {
             var d = new Date();
@@ -74,6 +76,7 @@
         <div id="campaign-list-header">
             <div id="campaign-list-header-title">Campaigns</div>
             <div id="add-campaign-btn" data-bind="click: newCampaign"> + </div>
+            <i class="fa fa-refresh" aria-hidden="true" data-bind="click: init"></i>
         </div>
         <div class="campaign-list-container clearfix" data-bind="visible: pendinglist().length>0">
             <div class="status-title">Pending Campaigns</div>
@@ -149,11 +152,11 @@
             </div>
             <div id="canvassers-input">
                 <label>Canvassers</label>
-                <select multiple="multiple" disabled data-bind="options: canvassersToPick, optionsText: 'CanvasserName', optionsValue: 'CanvasserGUID', selectedOptions: canvassersAssigned"></select>
+                <textarea disabled data-bind="value: canvasserNameList" style="width:220px;height:55px;font-size: 12px;"></textarea>
             </div>
             <div id="managers-input">
                 <label>Managers</label>
-                <select multiple="multiple" disabled data-bind="options: managersToPick, optionsText: 'ManagerName', optionsValue: 'ManagerGUID',selectedOptions: managersAssigned"></select>
+                <textarea disabled data-bind="value: managerNameList" style="width:220px;height:55px;font-size: 12px;"></textarea>
             </div>
             <br />
              <div style="margin-top:10px;display: inline-block;"> 
@@ -168,7 +171,7 @@
             </div>
             <div style="margin-top:10px;display: inline-block;">
                 <label>Questions</label>
-                <textarea disabled data-bind="value: questions"></textarea>
+                <textarea disabled data-bind="value: questions" style="font-size:12px;"></textarea>
             </div>
             <div style="margin-top:10px;display: inline-block;">
                 <label>Start Date</label>
@@ -176,14 +179,17 @@
             </div>
             <div style="margin-top:10px;display: inline-block;">
                 <label>Talking Points</label>
-                <textarea disabled data-bind="value: talkingPoints"></textarea>
+                <textarea disabled data-bind="value: talkingPoints" style="font-size:12px;"></textarea>
             </div>
         </div>
         </div>
         <div class="modal-footer">
             
-            <div class="save-btn" data-bind="click: saveCampaign">SAVE</div>
-            <div class="cancel-btn" data-bind="click: cancel">CANCEL</div>
+            <div class="save-btn modal-btn" data-bind="click: saveCampaign,visible: isNew">SAVE</div>
+            <div class="update-btn modal-btn" data-bind="click: updateCampaign, visible: !isNew() && isEdit()">UPDATE</div>
+            <div class="edit-btn modal-btn" data-bind="click: editCampaign, visible: !isNew() && !isEdit()">EDIT</div>
+            <div class="cancel-btn modal-btn" data-bind="click: cancel">CANCEL</div>
+
         </div>
     </div>
 
