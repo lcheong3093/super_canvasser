@@ -106,6 +106,8 @@
                     setCookie('UserFullName', data.Name);
                     if(role=="Manager")
                         window.open("/web/Manager/Dashboard.html","_self");
+                    else if(role=="Canvasser")
+                        window.open("/web/Canvasser/Dashboard.html","_self");
                     
                 }).fail(function (data) {
                 

@@ -97,7 +97,7 @@ module.exports = {
                 var coordinates = [];
 
                 var encodedAddresses = 0;
-                debugger;
+            
                 for (var i = 0; i < ToGeocode.length; i++) {
                     
                     googleMapsClient.geocode({
@@ -112,7 +112,7 @@ module.exports = {
                           else{
                             
                           }
-                            debugger;
+                            
                             if(encodedAddresses == ToGeocode.length) {
 
                                 entities[0].LocationsCoordinates = JSON.stringify(coordinates);
@@ -196,31 +196,6 @@ module.exports = {
             }
 
             callback(null, managerList);     
-        });
-    },
-    add_manager_to_campaign: function(managerGUID,campaignGUID,callback){
-        const query = datastore.createQuery("Manager");
-        query.filter('UserGUID', managerGUID);
-        datastore.runQuery(query, function(err, entities) {
-            if(err) throw err;
-            if(entities.length > 0){
-                if(entities[0].Campaigns.includes(campaignGUID)){
-                    callback(err,"OK");
-                }
-                else {
-                    var campaigns = entities[0].Campaigns + ',' + campaignGUID;
-                    entities[0].Campaigns = campaigns;
-                    datastore.save(entities[0]);
-
-                    callback(err,"OK");
-                }
-                
-            }
-            else {
-
-
-            }
-
         });
     }
 

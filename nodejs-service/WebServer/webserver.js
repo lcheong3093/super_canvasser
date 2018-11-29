@@ -27,5 +27,21 @@ webserverRouter.get('/Manager/Dashboard.html', function (req, res) {
 });
 
 
+//Canvasser
+webserverRouter.get('/Canvasser/Scripts/canvasserdashboard.js', function (req, res) {
+   res.sendFile( __dirname + "/public/Canvasser/Scripts/canvasserdashboard.js");
+});
+webserverRouter.get('/Canvasser/Style/dashboard.css', function (req, res) {
+   res.sendFile( __dirname + "/public/Canvasser/Style/dashboard.css");
+});
+webserverRouter.get('/Canvasser/Dashboard.html', function (req, res) {
+	if(req.session && req.session.UserType == "Canvasser")
+   		res.sendFile( __dirname + "/public/Canvasser/Dashboard.html");
+   	else
+   		res.redirect('/web'); 
+});
+
+
+
 
 module.exports = webserverRouter;
