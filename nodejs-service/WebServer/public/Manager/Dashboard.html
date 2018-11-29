@@ -152,11 +152,11 @@
             </div>
             <div id="canvassers-input">
                 <label>Canvassers</label>
-                <select multiple="multiple" disabled data-bind="options: canvassersToPick, optionsText: 'CanvasserName', optionsValue: 'CanvasserGUID', selectedOptions: canvassersAssigned"></select>
+                <textarea disabled data-bind="value: canvasserNameList" style="width:220px;height:55px;font-size: 12px;"></textarea>
             </div>
             <div id="managers-input">
                 <label>Managers</label>
-                <select multiple="multiple" disabled data-bind="options: managersToPick, optionsText: 'ManagerName', optionsValue: 'ManagerGUID',selectedOptions: managersAssigned"></select>
+                <textarea disabled data-bind="value: managerNameList" style="width:220px;height:55px;font-size: 12px;"></textarea>
             </div>
             <br />
              <div style="margin-top:10px;display: inline-block;"> 
@@ -171,7 +171,7 @@
             </div>
             <div style="margin-top:10px;display: inline-block;">
                 <label>Questions</label>
-                <textarea disabled data-bind="value: questions"></textarea>
+                <textarea disabled data-bind="value: questions" style="font-size:12px;"></textarea>
             </div>
             <div style="margin-top:10px;display: inline-block;">
                 <label>Start Date</label>
@@ -179,16 +179,16 @@
             </div>
             <div style="margin-top:10px;display: inline-block;">
                 <label>Talking Points</label>
-                <textarea disabled data-bind="value: talkingPoints"></textarea>
+                <textarea disabled data-bind="value: talkingPoints" style="font-size:12px;"></textarea>
             </div>
         </div>
         </div>
         <div class="modal-footer">
             
-            <div class="save-btn" data-bind="click: saveCampaign,visible: isNew">SAVE</div>
-            <div class="update-btn" data-bind="click: updateCampaign, visible: !isNew() && isEdit()">UPDATE</div>
-            <div class="edit-btn" data-bind="click: editCampaign, visible: !isNew() && !isEdit()">EDIT</div>
-            <div class="cancel-btn" data-bind="click: cancel">CANCEL</div>
+            <div class="save-btn modal-btn" data-bind="click: saveCampaign,visible: isNew">SAVE</div>
+            <div class="update-btn modal-btn" data-bind="click: updateCampaign, visible: !isNew() && isEdit()">UPDATE</div>
+            <div class="edit-btn modal-btn" data-bind="click: editCampaign, visible: !isNew() && !isEdit()">EDIT</div>
+            <div class="cancel-btn modal-btn" data-bind="click: cancel">CANCEL</div>
 
         </div>
     </div>

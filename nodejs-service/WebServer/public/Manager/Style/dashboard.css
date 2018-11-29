@@ -113,7 +113,12 @@ label {
 .save-btn {
 	background-color: #56d856;
 }
-
+.update-btn {
+    background-color: #56d856;
+}
+.edit-btn {
+    background-color: #56d856;
+}
 .cancel-btn {
 	background-color: #ff4c4c;
 }
@@ -180,6 +185,10 @@ label {
 }
 .fa-refresh:hover {
     background-color: #6bb5f5;
+}
+
+.modal-btn {
+    color:white;
 }
 
  

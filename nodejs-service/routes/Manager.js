@@ -74,14 +74,14 @@ module.exports = {
 
     },
     update_campaign: function(campaign,callback) {
-        debugger;
+        
         const query = datastore.createQuery("Campaign");
         query.filter('CampaignGUID', campaign.CampaignGUID);
         datastore.runQuery(query, function(err, entities) {
             if(err) throw err;
 
             if(entities.length > 0){
-                debugger;
+                
                 var questionnaire = campaign.Questionnaire;
                 var locations = campaign.Locations;
 
@@ -93,11 +93,42 @@ module.exports = {
                 entities[0].Managers = campaign.Managers;
                 entities[0].Canvassers = campaign.Canvassers;
 
-                datastore.save(entities[0],function(err){
-                    if(err) throw err;
+                var ToGeocode = locations.split(/\r?\n/);
+                var coordinates = [];
 
-                    callback(err,"OK");
-                });
+                var encodedAddresses = 0;
+                debugger;
+                for (var i = 0; i < ToGeocode.length; i++) {
+                    
+                    googleMapsClient.geocode({
+                          address: ToGeocode[i]
+                        }, function(err, response) {
+                            encodedAddresses++;
+                          if (!err) {
+                            var responseGeo = response.json.results[0].geometry.location;
+
+                            coordinates.push([responseGeo.lat, responseGeo.lng]);
+                          }
+                          else{
+                            
+                          }
+                            debugger;
+                            if(encodedAddresses == ToGeocode.length) {
+
+                                entities[0].LocationsCoordinates = JSON.stringify(coordinates);
+
+                                datastore.save(entities[0],function(err){
+                                    if(err) throw err;
+
+                                    callback(err,"OK");
+                                });
+
+                            }
+                        }
+                    );
+                }
+
+                
 
                 
             }
