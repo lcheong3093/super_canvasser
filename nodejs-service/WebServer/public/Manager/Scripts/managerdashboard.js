@@ -56,6 +56,7 @@ function CampaignListViewModel() {
 function CampaignViewModel() {
 	var self = this;
 
+	self.campaignGUID = ko.observable('');
 	self.campaignName = ko.observable('');
 
 	self.canvassersAssigned = ko.observableArray();
@@ -119,23 +120,8 @@ function CampaignViewModel() {
 	      url: '/api/create_campaign',
 	      data: JSON.stringify(input),
 		}).done(function(data) {
-			for(var i = 0; i < self.managersAssigned().length; i++) {
-				var input = {
-					'ManagerGUID' : self.managersAssigned()[i],
-					'CampaignGUID' : data
-				}
-			  	$.ajax({
-				  type: "POST",
-			      contentType: "application/json",
-			      url: '/api/add_manager_to_campaign',
-			      data: JSON.stringify(input),
-					}).done(function(data) {
-						if(getCookie('UserGUID') == input.ManagerGUID)
-					  		campaignListVM.init();
-					  	self.cancel();
-					});;
-
-			}
+			campaignListVM.init();
+			self.cancel();
 			
 		});
 	};
@@ -148,7 +134,8 @@ function CampaignViewModel() {
 			'Start': self.startDate(),
 			'Talking_points': self.talkingPoints(),
 			'Managers': self.managersAssigned(),
-			'Canvassers': self.canvassersAssigned()
+			'Canvassers': self.canvassersAssigned(),
+			'CampaignGUID': self.campaignGUID()
 		};
 		$.ajax({
 		  type: "POST",
@@ -156,23 +143,8 @@ function CampaignViewModel() {
 	      url: '/api/update_campaign',
 	      data: JSON.stringify(input),
 		}).done(function(data) {
-			for(var i = 0; i < self.managersAssigned().length; i++) {
-				var input = {
-					'ManagerGUID' : self.managersAssigned()[i],
-					'CampaignGUID' : data
-				}
-			  	$.ajax({
-				  type: "POST",
-			      contentType: "application/json",
-			      url: '/api/add_manager_to_campaign',
-			      data: JSON.stringify(input),
-					}).done(function(data) {
-						if(getCookie('UserGUID') == input.ManagerGUID)
-					  		campaignListVM.init();
-					  	self.cancel();
-					});;
-
-			}
+			campaignListVM.init();
+			self.cancel();
 			
 		});
 	};
@@ -188,6 +160,7 @@ function CampaignViewModel() {
 		self.questions(campaign.Questionnaire);
 		self.startDate(campaign.Start);
 		self.talkingPoints(campaign.Talking_points);
+		self.campaignGUID(campaign.CampaignGUID);
 
 		$("#canvasser-select").val(campaign.Canvassers).trigger('change');
 		$("#manager-select").val(campaign.Managers).trigger('change');
@@ -216,6 +189,7 @@ function CampaignViewModel() {
 		markersLayer.clearLayers();
 		self.isEdit(true);
 		self.isNew(true);
+		self.campaignGUID('');
 		self.locations('');
 		self.questions('');
 		self.startDate('');

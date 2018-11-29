@@ -74,14 +74,14 @@ module.exports = {
 
     },
     update_campaign: function(campaign,callback) {
-        
+        debugger;
         const query = datastore.createQuery("Campaign");
-        query.filter('CampaignGUID', campaign.campaignGUID);
+        query.filter('CampaignGUID', campaign.CampaignGUID);
         datastore.runQuery(query, function(err, entities) {
             if(err) throw err;
 
             if(entities.length > 0){
-
+                debugger;
                 var questionnaire = campaign.Questionnaire;
                 var locations = campaign.Locations;
 
@@ -93,9 +93,13 @@ module.exports = {
                 entities[0].Managers = campaign.Managers;
                 entities[0].Canvassers = campaign.Canvassers;
 
-                datastore.save(entities[0]);
+                datastore.save(entities[0],function(err){
+                    if(err) throw err;
 
-                callback(err,"OK");
+                    callback(err,"OK");
+                });
+
+                
             }
             else {
 
