@@ -213,8 +213,8 @@ function CampaignViewModel() {
 			var parsedLocations = JSON.parse(campaign.LocationsCoordinates);
 			parsedLocations.forEach(function(location){
 
-        		markersLayer.addLayer(L.marker(location)); 
-				locationmap.setView(location);
+        		markersLayer.addLayer(L.marker(location.coordinates)); 
+				locationmap.setView(location.coordinates);
 
 			});
 			
