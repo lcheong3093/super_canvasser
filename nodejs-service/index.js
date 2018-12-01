@@ -4,6 +4,16 @@ var cookieParser = require('cookie-parser');
 var path = require('path');
 var bodyParser = require('body-parser');
 var Promise = require("bluebird");
+var https = require('https');
+var fs = require('fs');
+
+var key = fs.readFileSync('selfsignedkey.key');
+var cert = fs.readFileSync( 'selfsignedcert.cert' );
+
+var options = {
+key: key,
+cert: cert
+};
 
 var app = express();
 
@@ -48,7 +58,11 @@ app.use(function(err, req, res, next) {
 if (module === require.main) {
   // [START server]
   // Start the server
-  const server = app.listen(process.env.PORT || 8080, () => {
+  //const server = app.listen(process.env.PORT || 8080, () => {
+  //  const port = server.address().port;
+  //  console.log(`App listening on port ${port}`);
+  //});
+  const server = https.createServer(options,app).listen(8080,() => {
     const port = server.address().port;
     console.log(`App listening on port ${port}`);
   });

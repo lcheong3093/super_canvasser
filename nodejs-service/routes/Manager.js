@@ -128,7 +128,7 @@ module.exports = {
                             if(encodedAddresses == ToGeocode.length) {
 
                                 entities[0].LocationsCoordinates = JSON.stringify(coordinates);
-
+                                debugger;
                                 datastore.save(entities[0],function(err){
                                     if(err) throw err;
 
