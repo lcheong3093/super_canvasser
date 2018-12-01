@@ -5,6 +5,7 @@ var mainRouter = express.Router();
 //Import files
 const Auth = require('./Authentication');
 const Manager = require('./Manager');
+const Canvasser = require('./Canvasser');
 const Helpers = require('./Helpers');
 const SystemAdmin = require('./SystemAdmin')
 
@@ -24,14 +25,17 @@ mainRouter.post('/login', (req, res) => {
         if(result.length == 0) {
             res.status(500).send("Incorrect password or username");
         } else{
+            req.session.UserType = role;
+            req.session.Email = result[0].Email;
+            req.session.Name = result[0].Name;
+            if(role == "Canvasser")
+                req.session.UserGUID = result[0].CanvasserGUID;
+            else
+                req.session.UserGUID = result[0].UserGUID;
+            req.session.Username = result[0].Username;
+             
 
-              req.session.Email = result[0].Email;
-              req.session.Name = result[0].Name;
-              req.session.UserGUID = result[0].UserGUID;
-              req.session.Username = result[0].Username;
-              req.session.UserType = role;
-
-                res.status(200).send(req.session);
+            res.status(200).send(req.session);
         }
     });
 });
@@ -59,31 +63,25 @@ mainRouter.post('/assignments', function(req, res){
 });
 
 mainRouter.post('/change_availability', (req, res) => {
-    var dates = req.body.dates;
-    var user = req.body.username;
-
-    //Convert array to string to store into Datastore
-    var insert = dates[0];
-    for(var i=1; i<dates.length; i++)
-        insert += ", " + dates[i];
-
-    //Find specified canvasser
-    const query = datastore.createQuery('Canvasser');
-    query.filter('Username', user);
-
-    datastore.runQuery(query, function(err, entities) {
-        if(err) throw err;
-
-        //Construct entity for update
-        var entity = entities[0];
-        entity.Availability = insert;
-
-        datastore.update(entity, function(err, apiResponse){
-            if(err) throw err;
+    debugger;
+    if(req.session && req.session.UserType == "Canvasser"){
+        Canvasser.change_availability(req.session.UserGUID, req.body.dates, function(err, result){
+            res.status(200).send(result);
         });
-    });
+    }
+    else 
+        res.status(401).send("Unauthorized");
 
-    res.send({status: 'OK'});
+});
+
+mainRouter.post('/get_availability', (req, res) => {
+    if(req.session && req.session.UserType == "Canvasser"){
+        Canvasser.get_availability(req.session.UserGUID, function(err, result){
+            res.status(200).send(result);
+        });
+    }
+    else 
+        res.status(401).send("Unauthorized");
 });
 
 /** CAMPAIGN MANAGER REQUESTS **/
