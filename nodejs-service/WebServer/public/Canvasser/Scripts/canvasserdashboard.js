@@ -172,3 +172,14 @@ $( document ).ready(function() {
 	availabilityListVM.init();
 });
 
+function toggleTab(tab) {
+
+	if(tab == 1){
+		$("#tasks-list").show();
+		$("#availability-editor").hide();
+	}
+	else if(tab == 2){
+		$("#tasks-list").hide();
+		$("#availability-editor").show();
+	}
+}

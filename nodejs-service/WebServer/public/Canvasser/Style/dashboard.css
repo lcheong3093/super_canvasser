@@ -62,4 +62,6 @@ label {
     border-radius: 10px;
     background-color: #548854;
     color: white;
+    cursor: pointer;
 }
+
