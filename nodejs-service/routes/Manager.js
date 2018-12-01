@@ -44,11 +44,17 @@ module.exports = {
                     encodedAddresses++;
                   if (!err) {
                     var responseGeo = response.json.results[0].geometry.location;
-
-                    coordinates.push([responseGeo.lat, responseGeo.lng]);
+                    
+                    coordinates.push({
+                        'location': response.query.address,
+                        'coordinates': [responseGeo.lat, responseGeo.lng]
+                    });
                   }
                   else{
-                    
+                    coordinates.push({
+                        'location': response.query.address,
+                        'coordinates': null
+                    });
                   }
                 
                     if(encodedAddresses == ToGeocode.length) {
@@ -107,10 +113,16 @@ module.exports = {
                           if (!err) {
                             var responseGeo = response.json.results[0].geometry.location;
 
-                            coordinates.push([responseGeo.lat, responseGeo.lng]);
+                            coordinates.push({
+                                'location': response.query.address,
+                                'coordinates': [responseGeo.lat, responseGeo.lng]
+                            });
                           }
                           else{
-                            
+                            coordinates.push({
+                                'location': response.query.address,
+                                'coordinates': null
+                            });
                           }
                             
                             if(encodedAddresses == ToGeocode.length) {
