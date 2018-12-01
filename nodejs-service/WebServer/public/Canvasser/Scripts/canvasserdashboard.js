@@ -17,8 +17,7 @@ function TaskListViewModel() {
 		  type: "POST",
 	      contentType: "application/json",
 	      url: '/api/get_tasks',
-			xhrFields: { withCredentials: true },
-	      data: JSON.stringify(input),
+			xhrFields: { withCredentials: true }
 		}).done(function(data) {
 		  	for(var i =0;i<data.length; i++){
 
@@ -33,6 +32,10 @@ function TaskListViewModel() {
 
 		  	}
 		});
+	};
+
+	self.editAvailiabilty = function () {
+		editAvailabilityViewDialog.dialog('open');
 	};
 
 }
@@ -53,70 +56,14 @@ function TaskViewModel() {
 	self.talkingPoints = ko.observable('');
 
 
-	self.saveCampaign = function () {
-		var input = {
-			'Questionnaire': self.questions(),
-			'Locations': self.locations(),
-			'Name': self.campaignName(),
-			'Start': self.startDate(),
-			'Talking_points': self.talkingPoints(),
-			'Managers': self.managersAssigned(),
-			'Canvassers': self.canvassersAssigned(),
-			'Status': 'Pending'
-		};
-		$.ajax({
-		  type: "POST",
-	      contentType: "application/json",
-	      url: '/api/create_campaign',
-	      data: JSON.stringify(input),
-		}).done(function(data) {
-			campaignListVM.init();
-			self.cancel();
-			
-		});
-	};
-
-	self.updateCampaign = function () {
-		var input = {
-			'Questionnaire': self.questions(),
-			'Locations': self.locations(),
-			'Name': self.campaignName(),
-			'Start': self.startDate(),
-			'Talking_points': self.talkingPoints(),
-			'Managers': self.managersAssigned(),
-			'Canvassers': self.canvassersAssigned(),
-			'CampaignGUID': self.campaignGUID()
-		};
-		$.ajax({
-		  type: "POST",
-	      contentType: "application/json",
-	      url: '/api/update_campaign',
-	      data: JSON.stringify(input),
-		}).done(function(data) {
-			campaignListVM.init();
-			self.cancel();
-			
-		});
-	};
-
-	self.openExistingCampaign = function (campaign) {
+	self.openTask = function (task) {
 		
-		self.isEdit(false);
-		self.isNew(false);
-		self.campaignName(campaign.Name);
-		self.canvassersAssigned(campaign.Canvassers);
-		self.managersAssigned(campaign.Managers);
-		self.locations(campaign.Locations);
-		self.questions(campaign.Questionnaire);
-		self.startDate(campaign.Start);
-		self.talkingPoints(campaign.Talking_points);
-		self.campaignGUID(campaign.CampaignGUID);
-
-		self.canvasserNameList(getStringListOfCanvassers(campaign.Canvassers));
-		self.managerNameList(getStringListOfManagers(campaign.Managers));
-
-		$("#canvasser-select").val(campaign.Canvassers).trigger('change');
-		$("#manager-select").val(campaign.Managers).trigger('change');
+		self.campaignName(task.Name);
+		self.locations(task.Locations);
+		self.questions(task.Questionnaire);
+		self.startDate(task.Start);
+		self.talkingPoints(task.Talking_points);
+		self.campaignGUID(task.CampaignGUID);
 
 		if(campaign.LocationsCoordinates){
 			var parsedLocations = JSON.parse(campaign.LocationsCoordinates);
@@ -129,73 +76,99 @@ function TaskViewModel() {
 			
 		}
 
-		campaignViewDialog.dialog("open");
+		taskViewDialog.dialog("open");
 		
 	};
 
+	self.init = function () {
+
+	};
+	
 	self.cancel = function () {
 		self.cleanModal();
-		campaignViewDialog.dialog("close");
+		taskViewDialog.dialog("close");
 	};
 
 	self.cleanModal = function () {
 		markersLayer.clearLayers();
-		self.isEdit(true);
-		self.isNew(true);
 		self.campaignGUID('');
 		self.locations('');
 		self.questions('');
 		self.startDate('');
 		self.talkingPoints('');
 		self.campaignName('');
-		self.canvassersAssigned([]);
-		self.managersAssigned([]);
-
-		$("#canvasser-select").val('').trigger('change');
-		$("#manager-select").val('').trigger('change');
-
-	};
-
-	self.editCampaign = function () {
-		self.isEdit(true);
 	};
 
 }
 
-var taskViewDialog = $("#task-view-modal").dialog({
-  dialogClass: "task-view-dialog",
-  autoOpen: false,
-  width: 500,
-  height: 700,
-  open: function () {
-        //Adds blacked out overlay
-        $('body').prepend('<div class="ui-widget-overlay ui-front"></div>');
-        locationmap.invalidateSize();
-    },
-    close: function () {
-        $('body').find('.ui-widget-overlay.ui-front').remove();
-    }
-});
+var datesJS = [];
+function AvailabilityListViewModel() {
+	var self = this;
+
+	self.availabilityList = ko.observableArray();
+
+	self.init = function() {
+		datesJS = [];
+		$.ajax({
+		  type: "POST",
+	      contentType: "application/json",
+	      url: '/api/get_availability',
+			xhrFields: { withCredentials: true }
+		}).done(function(data) {
+		  	if(data) {
+		  		var splitDates = data.split(',');
+
+		  		splitDates.forEach(function(item){
+
+		  			var itemToInsert = item.trim();
+		  			
+		  			$('#dates-selector').multiDatesPicker('addDates', itemToInsert);
+		  			var dateParsed = new Date(itemToInsert);
+		  			datesJS.push(dateParsed.toDateString());
+		  			availabilityListVM.availabilityList(datesJS);
+		  			
+		  		});
+		  	}
+		});
+	};
+
+};
+
+function saveAvailability() {
+	var input = {
+		'dates': $("#availability-editor-input").val()
+	};
+	$.ajax({
+		  type: "POST",
+	      contentType: "application/json",
+	      url: '/api/change_availability',
+			xhrFields: { withCredentials: true },
+			data: JSON.stringify(input)
+		}).done(function(data) {
+		  	availabilityListVM.init();
+		  	
+		});
+}
+
 var taskListVM = new TaskListViewModel();
 var taskVM = new TaskViewModel();
+var availabilityListVM = new AvailabilityListViewModel();
+
 taskListVM.init();
 taskVM.init();
 
-ko.applyBindings(taskListVM,$("#task-list")[0]);
-ko.applyBindings(taskVM,$("#task-view-modal")[0]);
-var locationmap;
-var markersLayer;
-var mapmarkers = [];
+//ko.applyBindings(taskListVM,$("#task-list")[0]);
+//ko.applyBindings(taskVM,$("#task-view-modal")[0]);
+
+ko.applyBindings(availabilityListVM,$("#availability-editor-left")[0]);
+
+
+
 $( document ).ready(function() {
-    $("select").select2({
-    	tags: true
-    });
-    var layer = new L.StamenTileLayer("toner");
-    markersLayer = new L.LayerGroup();
-	locationmap = new L.Map("locations-map", {
-    	center: new L.LatLng(37.7, -122.4),
-    	zoom: 12
+    $("#dates-selector").multiDatesPicker({
+		altField: '#availability-editor-input'
 	});
-	locationmap.addLayer(layer);
-    markersLayer.addTo(locationmap);
+
+	availabilityListVM.init();
 });
+

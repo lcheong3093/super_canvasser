@@ -34,6 +34,12 @@ webserverRouter.get('/Canvasser/Scripts/canvasserdashboard.js', function (req, r
 webserverRouter.get('/Canvasser/Style/dashboard.css', function (req, res) {
    res.sendFile( __dirname + "/public/Canvasser/Style/dashboard.css");
 });
+webserverRouter.get('/Canvasser/Scripts/jquery-ui.multidatespicker.css', function (req, res) {
+   res.sendFile( __dirname + "/public/Canvasser/Scripts/jquery-ui.multidatespicker.css");
+});
+webserverRouter.get('/Canvasser/Scripts/jquery-ui.multidatespicker.js', function (req, res) {
+   res.sendFile( __dirname + "/public/Canvasser/Scripts/jquery-ui.multidatespicker.js");
+});
 webserverRouter.get('/Canvasser/Dashboard.html', function (req, res) {
 	if(req.session && req.session.UserType == "Canvasser")
    		res.sendFile( __dirname + "/public/Canvasser/Dashboard.html");

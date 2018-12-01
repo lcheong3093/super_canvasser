@@ -21,8 +21,7 @@ function CampaignListViewModel() {
 		  type: "POST",
 	      contentType: "application/json",
 	      url: '/api/get_campaigns',
-			xhrFields: { withCredentials: true },
-	      data: JSON.stringify(input),
+			xhrFields: { withCredentials: true }
 		}).done(function(data) {
 		  	for(var i =0;i<data.length; i++){
 

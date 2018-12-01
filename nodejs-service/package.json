@@ -12,7 +12,8 @@
     "cookie-session": "^2.0.0-beta.3",
     "ejs": "^2.6.1",
     "express": "^4.16.4",
-    "express-session": "^1.15.6"
+    "express-session": "^1.15.6",
+    "jquery-ui-multidatespicker": "^1.6.6"
   },
   "devDependencies": {},
   "scripts": {
