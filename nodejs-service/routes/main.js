@@ -58,12 +58,18 @@ mainRouter.post('/delete_user', (req, res) => {
  });
 
 /** CAVNASSER REQUESTS **/
-mainRouter.post('/assignments', function(req, res){
-    
+mainRouter.post('/get_assignments', function(req, res){
+    if(req.session && req.session.UserType == "Canvasser"){
+        Canvasser.get_assignments(req.session.UserGUID, function(err, result){
+            res.status(200).send(result);
+        });
+    }
+    else 
+        res.status(401).send("Unauthorized");
 });
 
 mainRouter.post('/change_availability', (req, res) => {
-    debugger;
+
     if(req.session && req.session.UserType == "Canvasser"){
         Canvasser.change_availability(req.session.UserGUID, req.body.dates, function(err, result){
             res.status(200).send(result);

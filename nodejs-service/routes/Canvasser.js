@@ -31,7 +31,6 @@ module.exports = {
     },
     change_availability: function(userGUID,dates,callback) {
         
-        
         //Find specified canvasser
         const query = datastore.createQuery('Canvasser');
         query.filter('CanvasserGUID', userGUID);
@@ -50,8 +49,20 @@ module.exports = {
             });
         });
 
-        
+    },
+    get_assignments: function(userGUID,callback) {
+
+        const query = datastore.createQuery("Assignment");
+        query.filter('CanvasserGUID', userGUID);
+        datastore.runQuery(query, function(err, entities) {
+            if(err) throw err;
+
+            if(entities && entities.length>0)
+                callback(null, entities); 
+            else
+                callback(null,null);    
+        });
          
-    }
+    },
 
 }
