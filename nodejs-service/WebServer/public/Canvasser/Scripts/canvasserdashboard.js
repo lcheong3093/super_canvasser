@@ -1,41 +1,59 @@
 
-var activeTasksJS = [];
+var todayTasksJS = [];
 var completedTasksJS = [];
+var upcomingTasksJS = [];
 
 function TaskListViewModel() {
 	var self = this;
 
-	self.activelist = ko.observableArray();
+	self.todaylist = ko.observableArray();
 	self.completedlist = ko.observableArray();
+	self.upcomingList = ko.observableArray();
 
 	self.init = function () {
 
-		activeCampaignsJS = [];
-		completedCampaignsJS = [];
+		activeTasksJS = [];
+		completedTasksJS = [];
+		upcomingTasksJS = [];
+		var todaysDate = new Date();
+		todaysDateString = todaysDate.toDateString();
 		
 		$.ajax({
 		  type: "POST",
 	      contentType: "application/json",
-	      url: '/api/get_tasks',
+	      url: '/api/get_assignments',
 			xhrFields: { withCredentials: true }
 		}).done(function(data) {
-		  	for(var i =0;i<data.length; i++){
+		  	data.forEach(function(assignment){
+		  		var assignmentDate = new Date(assignment.Date);
+		  		assignmentDateString = assignmentDate.toDateString();
 
-		  		if(data[i].Status == "Active"){
-					activeCampaignsJS.push(data[i]);
-			  		self.activelist(activeCampaignsJS);
-				}			
-				else {
-					completedCampaignsJS.push(data[i]);
-			  		self.completedlist(completedCampaignsJS);
-				}	
+		  		if(todaysDateString == assignmentDateString){
+		  			//Todays Assignments
+		  			todayTasksJS.push(ko.mapping.fromJS(assignment));
+		  			self.todaylist(todayTasksJS);
 
-		  	}
+		  		}
+		  		else if(todaysDate<assignmentDate){
+		  			//Upcoming Assignments
+		  			upcomingTasksJS.push(ko.mapping.fromJS(assignment));
+		  			self.upcomingList(upcomingTasksJS);
+
+		  		}
+		  		else {
+		  			//Past Assignments
+		  			completedTasksJS.push(ko.mapping.fromJS(assignment));
+		  			self.completedlist(completedTasksJS);
+		  		}
+
+
+		  	});
 		});
 	};
 
-	self.editAvailiabilty = function () {
-		editAvailabilityViewDialog.dialog('open');
+	self.openTask = function (task) {
+		$("#tasks-list").hide();
+		$("#task-view").show();
 	};
 
 }
@@ -157,12 +175,13 @@ var availabilityListVM = new AvailabilityListViewModel();
 taskListVM.init();
 taskVM.init();
 
-//ko.applyBindings(taskListVM,$("#task-list")[0]);
+ko.applyBindings(taskListVM,$("#tasks-list")[0]);
 //ko.applyBindings(taskVM,$("#task-view-modal")[0]);
 
 ko.applyBindings(availabilityListVM,$("#availability-editor-left")[0]);
 
 
+var map;
 
 $( document ).ready(function() {
     $("#dates-selector").multiDatesPicker({
@@ -170,6 +189,11 @@ $( document ).ready(function() {
 	});
 
 	availabilityListVM.init();
+
+	map = new google.maps.Map(document.getElementById('task-view-left'), {
+          center: {lat: -34.397, lng: 150.644},
+          zoom: 8
+        });
 });
 
 function toggleTab(tab) {
@@ -177,9 +201,13 @@ function toggleTab(tab) {
 	if(tab == 1){
 		$("#tasks-list").show();
 		$("#availability-editor").hide();
+		$("#task-view").hide();
+
 	}
 	else if(tab == 2){
 		$("#tasks-list").hide();
 		$("#availability-editor").show();
+		$("#task-view").hide();
+
 	}
 }

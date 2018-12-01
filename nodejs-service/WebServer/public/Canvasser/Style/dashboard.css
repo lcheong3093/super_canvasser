@@ -65,3 +65,11 @@ label {
     cursor: pointer;
 }
 
+.assignment-box {
+    font-size: 30px;
+    padding: 50px;
+    margin: 3px;
+    background: linear-gradient(45deg, rgba(153,218,255,1) 0%, rgba(0,128,128,1) 100%);
+    color: white;
+}
+
