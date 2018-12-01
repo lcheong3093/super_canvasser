@@ -66,13 +66,13 @@
 <body>
 <div class="container-fluid">
     <div class="row">
-      <div class="col-xs-6 col-md-3 header-container">
+      <div class="col-xs-6 col-md-3 header-container" onclick="toggleTab(1)">
         <img src="/web/Images/logo.png" />
             <div id="user-profile-header" >
                 <span id="username-holder"> </span> <br />
             </div>    
         </div>
-      <div class="col-xs-6 col-md-3 header-container">Change Availability...</div>
+      <div class="col-xs-6 col-md-3 header-container" onclick="toggleTab(2)">Change Availability...</div>
       <div class="col-xs-6 col-md-3 header-container">Refresh Tasks</div>
       <div class="col-xs-6 col-md-3 header-container" onclick="window.open('/web/','_self');">Logout</div>
     </div>
@@ -81,7 +81,7 @@
     <div id="tasks-list">
 
     </div>    
-    <div id="availability-editor" style="width:100%">
+    <div id="availability-editor" style="width:100%; display: none;">
         <div id="dates-selector"></div>
         <div id="availability-editor-left" style="width:50%;float: right;padding-top: 20px;">
             <input id="availability-editor-input" style="display: none;"/>
