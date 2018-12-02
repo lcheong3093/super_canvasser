@@ -453,7 +453,15 @@
                 //     });
                 //     //routes[i] = result.waypoint_order;
                 // }
-                return clusters
+                tmp = [];
+                for(var i = 0; i < clusters.length; i++){
+                    tmp1 = []
+                    for(var j = 0; j < clusters[i].length; j++){
+                        tmp1.push(clusters[i][j].getTitle());
+                    }
+                    tmp.push(tmp1);
+                }
+                return tmp
                 //return routes;
             }
             //array1 = [a, b];
