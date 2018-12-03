@@ -152,4 +152,16 @@ mainRouter.post('/get_managers', function(req, res){
         res.status(401).send("Unauthorized");
     
 });
+
+mainRouter.post('/create_assignments', function(req, res){
+    if(req.session && req.session.UserType == "Manager")
+    {
+        Manager.create_assignments(req.body, function(err, result){
+            res.status(200).send(result);
+        });
+    }
+    else 
+        res.status(401).send("Unauthorized");
+    
+});
 module.exports = mainRouter;

@@ -73,3 +73,25 @@ label {
     color: white;
 }
 
+#location-name {
+    width: 80%;
+    display: inline-block;
+    font-size: 20px;
+    border-top: 1px solid black;
+    padding: 20px;
+    float:left;
+}
+
+#select-btn {
+    width: 20%;
+    display: inline-block;
+    font-size: 20px;
+    border-top: 1px solid black;
+    padding: 20px;
+    float:left;
+}
+
+#questionaire {
+    text-align: center;
+    font-size: 30px;
+}

@@ -3,6 +3,7 @@ var pendingCampaignsJS = [];
 var activeCampaignsJS = [];
 var completedCampaignsJS = [];
 
+var currentCampaign;
 function CampaignListViewModel() {
 	var self = this;
 
@@ -191,6 +192,8 @@ function CampaignViewModel() {
 	};
 
 	self.openExistingCampaign = function (campaign) {
+
+		currentCampaign = campaign;
 		
 		self.isEdit(false);
 		self.isNew(false);
@@ -249,6 +252,20 @@ function CampaignViewModel() {
 
 	self.editCampaign = function () {
 		self.isEdit(true);
+	};
+
+	self.createAssignment = function() {
+
+		$.ajax({
+		  type: "POST",
+	      contentType: "application/json",
+	      url: '/api/create_assignments',
+	      data: JSON.stringify(currentCampaign),
+		}).done(function(data) {
+			campaignListVM.init();
+			self.cancel();
+			
+		});
 	};
 
 }

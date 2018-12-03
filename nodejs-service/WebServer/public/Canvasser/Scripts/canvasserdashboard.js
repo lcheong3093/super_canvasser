@@ -53,11 +53,66 @@ function TaskListViewModel() {
 
 	self.openTask = function (task) {
 		$("#tasks-list").hide();
-		$("#task-view").show();
+		$("#task-view").show(); 
+
+		locationsListVM.open(task);
+
+
 	};
 
 }
 
+var locationsJS = [];
+var campaignObject;
+
+function LocationListViewModel() {
+	var self = this;
+
+	self.locations = ko.observableArray();
+	self.questions = ko.observableArray();
+
+	self.open = function(task) {
+		locationsJS = [];
+		
+
+		task.Locations().forEach(function(location){
+			locationsJS.push(location.location());
+		})
+
+		self.locations(locationsJS);
+
+	
+		var input = {
+			'CampaignGUID' : task.CampaignGUID()
+		}
+		$.ajax({
+		  type: "POST",
+	      contentType: "application/json",
+	      url: '/api/get_campaign',
+			xhrFields: { withCredentials: true },
+			data: JSON.stringify(input)
+		}).done(function(data) {
+		  	
+			campaignObject = data;
+
+			self.questions(campaignObject.Questionnaire.split(/\r?\n/));
+
+		  	
+		});
+	};
+
+	self.openSurvey = function () {
+		$("#locations-view-3").hide();
+		$("#questionaire").show();
+	};
+
+	self.submitQuestionaire = function () {
+		$("#locations-view-3").show();
+		$("#questionaire").hide();
+	};
+
+
+}
 
 function TaskViewModel() {
 	var self = this;
@@ -120,6 +175,7 @@ function TaskViewModel() {
 }
 
 var datesJS = [];
+
 function AvailabilityListViewModel() {
 	var self = this;
 
@@ -171,11 +227,13 @@ function saveAvailability() {
 var taskListVM = new TaskListViewModel();
 var taskVM = new TaskViewModel();
 var availabilityListVM = new AvailabilityListViewModel();
+var locationsListVM = new LocationListViewModel();
 
 taskListVM.init();
 taskVM.init();
 
 ko.applyBindings(taskListVM,$("#tasks-list")[0]);
+ko.applyBindings(locationsListVM,$("#task-view-right")[0]);
 //ko.applyBindings(taskVM,$("#task-view-modal")[0]);
 
 ko.applyBindings(availabilityListVM,$("#availability-editor-left")[0]);
