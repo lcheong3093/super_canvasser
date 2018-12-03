@@ -95,7 +95,18 @@
 
         </div>
         <div id="task-view-right" style="width:50%;float: right;padding-top: 20px;">
-            
+            <div data-bind="foreach: locations" id="locations-view-3">
+                <div data-bind="text: $data" id="location-name"></div> <div data-bind="click: $root.openSurvey" id="select-btn">SELECT</div>
+            </div>
+            <div id="questionaire" style="display: none">
+                <div data-bind="foreach: questions">
+                    <div data-bind="text: $data" id="question-name"></div> 
+                    <input type="radio" name="answer" >Yes
+                    <input type="radio" name="answe" >No
+                </div>
+
+                <div data-bind="click: submitQuestionaire" style="display: inline-block;padding: 25px 50px;border: 1px solid;">SUBMIT</div>
+            </div>
         </div>
     </div>  
     <div id="availability-editor" style="width:100%; display: none;">

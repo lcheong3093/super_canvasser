@@ -1,4 +1,6 @@
 const Datastore = require('@google-cloud/datastore');
+const kmeans = require('node-kmeans');
+
 const datastore = new Datastore({
     projectId: "super-canvasser-cse308",
 });
@@ -14,6 +16,37 @@ function uuidv4() {
     var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
     return v.toString(16);
   });
+}
+
+function getFirstAvailableDate(startDate,Availability){
+    var startDateDate = new Date(startDate);
+
+    var splitAvailiability = Availability.split(',');
+
+    splitAvailiability.forEach(function(date) {
+
+        var currentDate = new Date(date);
+
+        if(currentDate>=startDateDate)
+            return currentDate.toDateString();
+
+    });
+
+    var todaysDate = new Date();
+    return todaysDate.toDateString();
+}
+
+function getLocationList(response,locationfull) {
+    var toReturn = []
+
+    for(var i = 0; i < locationfull.length; i++) {
+        for(var j = 0; j<response.cluster.length; j++){
+            if(locationfull[i].coordinates == response.cluster[j])
+                toReturn.push(locationfull[i]);
+        }
+    }
+
+    return toReturn;
 }
 
 module.exports = {
@@ -128,7 +161,7 @@ module.exports = {
                             if(encodedAddresses == ToGeocode.length) {
 
                                 entities[0].LocationsCoordinates = JSON.stringify(coordinates);
-                                debugger;
+                                
                                 datastore.save(entities[0],function(err){
                                     if(err) throw err;
 
@@ -209,6 +242,109 @@ module.exports = {
 
             callback(null, managerList);     
         });
-    }
+    }, 
+    create_assignments: function(campaign, callback) {
+
+        const query = datastore.createQuery("Campaign");
+        query.filter('CampaignGUID',campaign.CampaignGUID);
+        datastore.runQuery(query, function(err, entities) {
+            if(err) throw err;
+
+            var campaignInfo = entities[0];
+
+            parsedLocationCoordinates = JSON.parse(campaignInfo.LocationsCoordinates);
+            NumOfCanvassers = campaignInfo.Canvassers.length;
+            CanvasserInfoLoaded = 0;
+            CanvasserInfo = [];
+
+            campaignInfo.Canvassers.forEach(function(canvasser){
+                const query = datastore.createQuery("Canvasser");
+                query.filter('CanvasserGUID', canvasser);
+                datastore.runQuery(query, function(err, entities) {
+                    if(err) throw err;
+
+                    CanvasserInfoLoaded++;
+
+                    CanvasserInfo.push({
+                        'CanvasserName': entities[0].Name,
+                        'CanvasserGUID': entities[0].CanvasserGUID,
+                        'Availability': entities[0].Availability
+                    });
+                    
+
+                    if(CanvasserInfoLoaded == NumOfCanvassers){
+                        //All Canvassers Loaded
+
+                        //Divide locations into number of canvassers
+                        var vectors =[];
+                        
+                        for(var i = 0; i<parsedLocationCoordinates.length; i++) {
+                            vectors.push(parsedLocationCoordinates[i].coordinates);
+                        }
+                        
+                        kmeans.clusterize(vectors, {k: NumOfCanvassers}, (err,res) => {
+                          if (err) console.error(err);
+
+                          else {
+                            
+                            //Assign to each canvasser
+                            var AssignmentsSaved = 0;
+
+
+                            for(var i = 0; i< NumOfCanvassers; i++) {
+
+                                if(res[i]) {
+                                    var dateOfAssignment = getFirstAvailableDate(campaignInfo.Start,CanvasserInfo[i].Availability);
+                                    var Locations = getLocationList(res[i],parsedLocationCoordinates);
+                                    debugger;
+                                    var entity = {
+                                        'AssignmentGUID': uuidv4(),
+                                        'CampaignGUID': campaign.CampaignGUID,
+                                        'CampaignName': campaignInfo.Name,
+                                        'CanvasserGUID': CanvasserInfo[i].CanvasserGUID,
+                                        'Date': dateOfAssignment,
+                                        'Locations': Locations
+                                    };
+
+                                    //Save asssignment
+                                    var key = datastore.key({
+                                        path:["Assignment", null]
+                                    });
+
+                                    var insert = {key: key, data: entity};
+
+                                    datastore.save(insert, function(err){
+                                        if(err) throw err;
+
+                                        
+                                       
+                                    });
+                                }
+
+                                
+
+                            }
+
+                            campaignInfo.Status = "Active";
+
+                            datastore.save(campaignInfo,function(err){
+                                    if(err) throw err;
+
+                                    callback(err,"OK");
+                                });
+                            
+
+                          }
+                        });
+
+                    }
+
+                });
+            })
+
+             
+        });
+
+    },
 
 }
